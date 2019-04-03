@@ -16,5 +16,5 @@ chapter3/
 *.lot
 *.synctex.gz
 *.toc
-
+*.bbl
 thesis.pdf

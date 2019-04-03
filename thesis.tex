@@ -4,7 +4,7 @@
 
 % Standard, old-style thesis
 \usepackage{isutraditional}   \chaptertitle
-
+\usepackage{comment}
 
 % Old-style, thesis numbering down to subsubsection
 \alternate
@@ -35,6 +35,9 @@
 % include path for figures
 \graphicspath{{paper1/figures_tables/}}
 
+\newenvironment{thesis}{}{}
+\excludecomment{thesis} % will exclude material that is only for the thesis
+
 
 \begin{document}
 \DeclareGraphicsExtensions{.jpg,.pdf,.mps,.png}
@@ -50,7 +53,7 @@
 \cleardoublepage \phantomsection \addcontentsline{toc}{chapter}{LIST OF FIGURES}
 \listoffigures
 % Comment out the next line if NOT using chaptertitle
-\addtocontents{toc}{\def\protect\@chapapp{CHAPTER\ }}
+%\addtocontents{toc}{\def\protect\@chapapp{CHAPTER\ }}
 
 
 
