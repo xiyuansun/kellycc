@@ -1,6 +1,12 @@
 % Template file for a standard thesis
 \documentclass[11pt]{isuthesis}
 \usepackage[pdftex]{graphicx}
+%\usepackage[utf8]{inputenc}
+%\usepackage{float}
+%\usepackage{graphicx}
+%\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{float}
 
 % Standard, old-style thesis
 \usepackage{isutraditional}   \chaptertitle
@@ -33,7 +39,7 @@
 \usepackage{import} 
 
 % include path for figures
-\graphicspath{{paper1/figures_tables/}}
+\graphicspath{{figures/}}
 
 \newenvironment{thesis}{}{}
 \excludecomment{thesis} % will exclude material that is only for the thesis
@@ -53,12 +59,12 @@
 \cleardoublepage \phantomsection \addcontentsline{toc}{chapter}{LIST OF FIGURES}
 \listoffigures
 % Comment out the next line if NOT using chaptertitle
-%\addtocontents{toc}{\def\protect\@chapapp{CHAPTER\ }}
+\addtocontents{toc}{\def\protect\@chapapp{CHAPTER\ }}
 
 
 
-\cleardoublepage \phantomsection \include{acknowlegements} % optional
-\cleardoublepage \phantomsection \include{abstract}        % optional
+\cleardoublepage \phantomsection \include{acknowlegements} 
+\cleardoublepage \phantomsection \include{abstract}        
 
 
 
@@ -68,26 +74,43 @@
 \include{introduction}
 
 
-\chapter{THIS IS THE TITLE OF THE FIRST PAPER}
+\chapter{METHOD}
 
-% only include the following lines if the manuscript has been submitted
-\paperinfo{published in the Journal of ABC} 
-\paperauthor{Jane Smith and Jesse Adams}    
+\section{Introduction}
+Put chapter 1 content here.
 
-\import{paper1/}{content1}
+\begin{thesis}
+Wrap content you only want for the thesis using the thesis environment.  
+This content will be included in the thesis, 
+but not in the submitted/published version of the manuscript.
+\end{thesis}
+
+\section{Lets make a table} 
+\input{figures/tab1} 
+
+\section{Lets share an historic moment}
+
+Figure \ref{history} is so amazing  that the rest is indeed obvious.
+
+\begin{figure}[h!tb] \centering
+\includegraphics{history}
+\caption{Suarez save the day !}
+\label{history}
+\end{figure}
 
 
-\appendixtitle 
-\appendix
-\include{appendix1}
-\include{appendix2}
+
+%\appendixtitle 
+%\appendix
+%\include{appendix1}
+%\include{appendix2}
 
 
 \renewcommand{\bibname}{\centerline{BIBLIOGRAPHY}}
 \unappendixtitle
 \newpage
 \phantomsection
-\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
+%\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
 \bibliography{mybib}
 
 \end{document}

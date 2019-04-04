@@ -10,35 +10,29 @@ necessary.
 
 \section{Introduction}
 
-Here initial concepts and conditions are explained and
-several hypothesis are mentioned in brief.
+RNA-Seq is a next generation sequencing procedure of the entire transcriptome by which one can measure the expression of gene expression. The number of reads mapped to a given gene is considered to be the estimate of the expression level of that feature using the technology. The end product of a RNA-seq experiment is a sequence of read counts, typically represented as a matrix with rows representing genes and columns representing samples from two varieties, as in Table \ref{tab:RNA-Seq Data}. In this example, there are $V=2$ varieties, $J_1 = 2$ samples in the first variety, $J_2=2$ samples in the second variety, and $G=10000$ genes. My interest is in the detection of differentially expressed genes among the varieties. 
 
-\subsection{Hypothesis}
+\begin{table}[H]
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      Gene &Variety1 Sample1 &Variety1 Sample2 &Variety2 Sample1 & Variety2 Sample2 \\
+      \hline
+      1 & 4 & 1 & 100 & 88 \\
+      \hline
+      2 & 65 & 48 & 55 & 59 \\
+      \hline
+      3 & 0 & 1 & 0 & 2\\
+      \hline
+      ... & ... & ... & ... & ...\\
+      \hline
+       10000 & 3 & 1 & 1 & 2\\
+       \hline
+    \end{tabular}
+\end{center}
+\caption{RNA-Seq Count Data Example}
+\label{tab:RNA-Seq Data}
+\end{table}
 
-Here one particular hypothesis is explained in depth
-and is examined in the light of current literature.
+The focus of this report is to provide a comparison of the methods related to the analysis of differential expression for RNA-seq data. In this report, I review statistical methods for detecting differential expression in the RNA-seq data, including the empirical Bayesian method. I summarize the results of a simulation study. I briefly describe some existing open source R and Bioconductor software for testing differential expression for RNA-seq data. I conclude the report with a discussion section. 
 
-\subsubsection{Parts of the hypothesis}
-
-Here one particular part of the hypothesis that is 
-currently being explained is examined and particular
-elements of that part are given careful scrutiny.
-
-% Below \subsubsection
-% Sectional commands: \paragraph and \subparagraph may also be used
-
-\subsection{Second Hypothesis}
-
-Here one particular hypothesis is explained in depth
-and is examined in the light of current literature.
-
-\subsubsection{Parts of the second hypothesis}
-
-Here one particular part of the hypothesis that is 
-currently being explained is examined and particular
-elements of that part are given careful scrutiny.
-
-\section{Criteria Review}
-
-Here certain criteria are explained thus eventually
-leading to a foregone conclusion.

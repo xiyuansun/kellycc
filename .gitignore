@@ -5,9 +5,7 @@
 *.Rproj
 
 # Add papers here
-chapter1/
-chapter2/
-chapter3/
+
 
 # LaTeX files
 *.aux
