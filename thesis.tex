@@ -19,20 +19,20 @@
 
 % Bibliography without numbers or labels
 \usepackage{natbib}
-\bibliographystyle{apa}
+%\bibliographystyle{apa}
 
 
 %Optional Package to add PDF bookmarks and hypertext links
 \usepackage[pdftex,hypertexnames=false,linktocpage=true]{hyperref}
 \hypersetup{
-  colorlinks=true,
-  linkcolor=blue,
-  anchorcolor=blue,
-  citecolor=blue,
-  filecolor=blue,
-  urlcolor=blue,
-  bookmarksnumbered=true,
-  pdfview=FitB
+	colorlinks=true,
+	linkcolor=blue,
+	anchorcolor=blue,
+	citecolor=blue,
+	filecolor=blue,
+	urlcolor=blue,
+	bookmarksnumbered=true,
+	pdfview=FitB
 }
 
 % Use import if there are .tex files called from chapter1.tex (a table for instance) 
@@ -63,7 +63,7 @@
 
 
 
-\cleardoublepage \phantomsection \include{acknowlegements} 
+\cleardoublepage \phantomsection \include{acknowledgements} 
 \cleardoublepage \phantomsection \include{abstract}        
 
 
@@ -77,13 +77,8 @@
 \chapter{METHOD}
 
 \section{Introduction}
-Put chapter 1 content here.
+Put chapter 1 content here. \cite{lorenz2014using}
 
-\begin{thesis}
-Wrap content you only want for the thesis using the thesis environment.  
-This content will be included in the thesis, 
-but not in the submitted/published version of the manuscript.
-\end{thesis}
 
 \section{Lets make a table} 
 \input{figures/tab1} 
@@ -111,6 +106,7 @@ Figure \ref{history} is so amazing  that the rest is indeed obvious.
 \newpage
 \phantomsection
 %\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
+\bibliographystyle{plain}
 \bibliography{mybib}
 
 \end{document}
