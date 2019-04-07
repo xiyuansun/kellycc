@@ -1,14 +1,17 @@
 % Introduction of the Thesis Template File
 \chapter{OVERVIEW}
 
-This is the opening paragraph to my thesis which
-explains in general terms the concepts and hypothesis
-which will be used in my thesis.
 
-With more general information given here than really
-necessary.
 
 \section{Introduction}
+
+Differential expression exists when the expected value of a phenotype differs from the expected phenotypic values of the other variety. Differential expression can occue if the mean phenotype of a variety is greater than the other variety's or less than the other variety's. I refer to the former as high differential expression (HDE) and the latter as low differential expression (LDE). There is differential expression (DE) if and only if either HDE or LDE holds.
+
+The focus here is on methods for count-based differential expression (DE) amalyses. Thus, the starting point here is a count table of features-by-samples, such as those from the Paschold project \cite{paschold2012complementation}.
+
+Considerable recent effort has been paid to the discovery of DE features, given a count table; recent comparisons have shown that no method dominates the spectrum of possible situations \cite{soneson2013comparison}\cite{rapaport2013comprehensive}. 
+
+\section{RNA-Seq Count Data}
 
 RNA-Seq is a next generation sequencing procedure of the entire transcriptome by which one can measure the expression of gene expression. The number of reads mapped to a given gene is considered to be the estimate of the expression level of that feature using the technology. The end product of a RNA-seq experiment is a sequence of read counts, typically represented as a matrix with rows representing genes and columns representing samples from two varieties, as in Table \ref{tab:RNA-Seq Data}. In this example, there are $V=2$ varieties, $J_1 = 2$ samples in the first variety, $J_2=2$ samples in the second variety, and $G=10000$ genes. My interest is in the detection of differentially expressed genes among the varieties. 
 
