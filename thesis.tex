@@ -82,7 +82,13 @@ To detemine whether the read count differences between different conditions for 
 
 \section{Empirical Bayes identification of gene differential expression from RNA-seq read counts}
 
-I consider an RNA sequencing (RNA-seq) experiment that involves two genetic varieties. For each variety, replicate RNA samples are isolated and assessed for quality. Complementary DNA (cDNA) libraries, consisting of short cDNA fragments derived from RNA, are constructed. Then, next generation sequencing technology is used to determine the {\tt reads}, in the cDNA libraries \cite{niemi2015empirical}. These reads are processed using bioinformatic algorithms to match the reads to genes. The results of read processing are summarized by a gene $\times$ sample matrix of counts. 
+I consider an RNA sequencing (RNA-seq) experiment that involves two genetic varieties. For each variety, replicate RNA samples are isolated and assessed for quality. Complementary DNA (cDNA) libraries, consisting of short cDNA fragments derived from RNA, are constructed. Then, next generation sequencing technology is used to determine the {\tt reads}, in the cDNA libraries \cite{niemi2015empirical}. These reads are processed using bioinformatic algorithms to match the reads to genes. The results of read processing are summarized by a gene $\times$ sample matrix of counts. See Datta and Nettleton \cite{datta2014statistical} for more details on RNA-seq experiments and data from a statistical perspective, and see Paschold et al. \cite{paschold2012complementation} for the biological background behind the use of RNA-seq to study gene expression differentiation. 
+
+To use RNA-seq counts to identify genes displaing differential expression (DE), I built a hierarchical to borrow information across gene-variety means and across gene-specific overdispersion parameters, estimate the hyperparameters using an empirical Bayes procedure, and calculate empirical Bayes posterior probabilities for DE. 
+
+\subsection{Hierarchical model for RNA-seq counts}
+
+
 
 \section{Alternative DGE tools}
 
