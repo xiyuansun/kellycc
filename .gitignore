@@ -4,8 +4,8 @@
 .Ruserdata
 *.Rproj
 
-# Add papers here
-
+# Add folders here
+code/*
 
 # LaTeX files
 *.aux
