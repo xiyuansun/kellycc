@@ -88,26 +88,80 @@ To use RNA-seq counts to identify genes displaing differential expression (DE), 
 
 \subsection{Hierarchical model for RNA-seq counts}
 
+Let $Y_{gij}$ be the count for gene $g=1,2,..., G$, variety $i=1,2$, and replicate $j=1,2,3,...,n_i$.
 
+I assume
+
+\begin{equation}
+\label{eq:1}
+Y_{gij} \sim NB(exp(\mu_{gi}+\gamma_{ij}), exp(\psi_g))
+\end{equation}
+
+The data model involves genewise overdispersion $\psi_g$ and a mean that depends on the gene-variety combination through $\mu_{gi}$ and on the sample through $\gamma_{ij}$. The $\mu_{gi}$ terms are of primary scientific interest. The $\gamma_{ij}$ terms are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
+
+Following \cite{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\phi_g$ and half-variety difference $\alpha_g$. For our differential expression study where number of varieties is 2, we let $i=1,2$ indicate the two varieties. The reparameterization is
+
+$$\phi_g = \frac{\mu_{g1}+\mu_{g2}}{2}, \alpha_g = \frac{\mu_{g1}-\mu_{g2}}{2}$$
+
+We assume a hierarchical model for the gene-specific mean parameters and overdispersion parameters. Initially, we assume the variety averages, half-variety averages, and overdispersion parameters follow normal distributions
+
+$$\phi_g \sim N(\eta_\phi, \sigma^2_\phi), \alpha_g \sim N(\eta_\alpha , \sigma^2_\alpha), \psi_g \sim N(\eta_\psi, \sigma^2_\psi) $$
+
+\subsection{Empirical Bayes}
+
+We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\phi_g, \alpha_g, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_\phi, \eta_\alpha, \eta_\psi)$ and $\sigma = (\sigma_\phi, \sigma_\alpha, \sigma_\psi)$. We obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \cite{niemi2015empirical}.
+
+To obtain normalization factors $\hat{\gamma}$, we use the weighted trimmed mean of $M$ values (TMM). We use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\phi}_g, \hat{\alpha}_g$)\cite{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\phi}_g , \hat{\alpha}_g, \hat{\psi}_g)$, we estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
+
+Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \cite{niemi2015empirical}. Equation \ref{eq:2} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
+
+\begin{equation}
+\label{eq:2}
+\begin{split}
+p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto & \prod_{g=1}^{G} [ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; exp(\mu_{gi} + \hat{\gamma}_{ij}), exp(\psi_g))
+ \\ & N(\phi_g ; \hat{\eta}_{\phi}, \hat{\sigma}^2_{\phi}) p(\alpha_g ; \hat{\eta}_{\alpha}, \hat{\sigma}_{\alpha}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  ]
+\end{split}
+\end{equation}
+
+We assume the densities of $\alpha_g$ are normal.
+
+To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \cite{stan2014stan} executed through the RStan interface \cite{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \cite{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:2}. 
+
+
+We ran 4 simultaneous chains with random initial starting values for 1000 burn-in iterations followed by another 1000 iterations retaining every fourth sample for inference. We monitored convergence using the potential scale reduction factor and effective sample size (ESS) for $\phi_g, \alpha_g$ and $\psi_g$ \cite{gelman1992inference}. If the minimum ESS was less than 1000, we reran the chains wit double the iterations for both burn-in and inference. We continued this restarting and doubling until we obtained minimum ESS greater than 1000 for all parameters. 
+
+\subsection{Gene expression differentiation}
+
+In the maize context that motivates this work, we are interested in differential expression (DE), i.e. either low differential expression (LDE) or high differential expression (HDE), in gene expression. For a specific gene $g$, LDE occurs when expected expression in the second variety is less than the expected expression of first variety, i.e., $\mu_{g1} > \mu_{g2}$, or equivalently, $\alpha_g>0$, and HDE occurs when the expected expression in the second variety is greater than the expected expression of first variety, i.e., $\mu_{g1} < \mu_{g2}$, or equivalently, $\alpha_g<0$. We evaluate these probabilities based on empirical Bayes estimates of their posterior probabilities, e.g., 
+
+\begin{equation}
+\label{eq:3}
+P(LDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\alpha_g>0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\alpha_g ^ {(m)}>0)
+\end{equation}
+
+where $\alpha_g^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes posterior.
+
+HDE probability is defined as equation \ref{eq:4}
+
+\begin{equation}
+\label{eq:4}
+P(HDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\alpha_g<0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\alpha_g ^ {(m)}<0)
+\end{equation}
+
+We construct a ranked list of genes according to the maximum of gene's LDE and HDE probabilities. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \cite{niemi2015empirical}. 
 
 \section{Alternative DGE tools}
 
 
 
+\section{Methods Comparison Result}
 
+Figure \ref{auc} is my facetted auc plot.
 
-
-\section{Methods Comparison} 
-\input{figures/tab1} 
-
-\section{Lets share an historic moment}
-
-Figure \ref{history} is so amazing  that the rest is indeed obvious.
-
-\begin{figure}[h!tb] \centering
-\includegraphics{history}
-\caption{Suarez save the day !}
-\label{history}
+\begin{figure}[h!tb] 
+\includegraphics[scale=0.40]{facet_auc_plot}
+\caption{Facet AUC Plot}
+\label{auc}
 \end{figure}
 
 
