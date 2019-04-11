@@ -18,8 +18,8 @@
 
 
 % Bibliography without numbers or labels
-\usepackage{natbib}
-%\bibliographystyle{apa}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
 
 
 %Optional Package to add PDF bookmarks and hypertext links
@@ -78,11 +78,11 @@
 
 \section{Estimating the difference between read counts for a given gene}
 
-To detemine whether the read count differences between different conditions for a given gene are greater than expected by chance, differential gene expression (DGE) tools must find a way to estimate that difference \cite{dundar2015introduction}.The two basic tasks of all DGE tools are: (1) Estimate the magnitude of differential expression between two or more conditions based on read counts from replicated samples, i.e., calculate the fold change of read counts, taking into account the differences in sequencing depth and variability; (2) Estimate the significance of the difference and correct for multiple testing. 
+To detemine whether the read count differences between different conditions for a given gene are greater than expected by chance, differential gene expression (DGE) tools must find a way to estimate that difference \citep{dundar2015introduction}.The two basic tasks of all DGE tools are: (1) Estimate the magnitude of differential expression between two or more conditions based on read counts from replicated samples, i.e., calculate the fold change of read counts, taking into account the differences in sequencing depth and variability; (2) Estimate the significance of the difference and correct for multiple testing. 
 
 \section{Empirical Bayes identification of gene differential expression from RNA-seq read counts}
 
-I consider an RNA sequencing (RNA-seq) experiment that involves two genetic varieties. For each variety, replicate RNA samples are isolated and assessed for quality. Complementary DNA (cDNA) libraries, consisting of short cDNA fragments derived from RNA, are constructed. Then, next generation sequencing technology is used to determine the {\tt reads}, in the cDNA libraries \cite{niemi2015empirical}. These reads are processed using bioinformatic algorithms to match the reads to genes. The results of read processing are summarized by a gene $\times$ sample matrix of counts. See Datta and Nettleton \cite{datta2014statistical} for more details on RNA-seq experiments and data from a statistical perspective, and see Paschold et al. \cite{paschold2012complementation} for the biological background behind the use of RNA-seq to study gene expression differentiation. 
+I consider an RNA sequencing (RNA-seq) experiment that involves two genetic varieties. For each variety, replicate RNA samples are isolated and assessed for quality. Complementary DNA (cDNA) libraries, consisting of short cDNA fragments derived from RNA, are constructed. Then, next generation sequencing technology is used to determine the {\tt reads}, in the cDNA libraries \citep{niemi2015empirical}. These reads are processed using bioinformatic algorithms to match the reads to genes. The results of read processing are summarized by a gene $\times$ sample matrix of counts. See Datta and Nettleton \citep{datta2014statistical} for more details on RNA-seq experiments and data from a statistical perspective, and see Paschold et al. \citep{paschold2012complementation} for the biological background behind the use of RNA-seq to study gene expression differentiation. 
 
 To use RNA-seq counts to identify genes displaing differential expression (DE), I built a hierarchical to borrow information across gene-variety means and across gene-specific overdispersion parameters, estimate the hyperparameters using an empirical Bayes procedure, and calculate empirical Bayes posterior probabilities for DE. 
 
@@ -99,7 +99,7 @@ Y_{gij} \sim NB(exp(\mu_{gi}+\gamma_{ij}), exp(\psi_g))
 
 The data model involves genewise overdispersion $\psi_g$ and a mean that depends on the gene-variety combination through $\mu_{gi}$ and on the sample through $\gamma_{ij}$. The $\mu_{gi}$ terms are of primary scientific interest. The $\gamma_{ij}$ terms are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
 
-Following \cite{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\phi_g$ and half-variety difference $\alpha_g$. For our differential expression study where number of varieties is 2, we let $i=1,2$ indicate the two varieties. The reparameterization is
+Following \citep{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\phi_g$ and half-variety difference $\alpha_g$. For our differential expression study where number of varieties is 2, we let $i=1,2$ indicate the two varieties. The reparameterization is
 
 $$\phi_g = \frac{\mu_{g1}+\mu_{g2}}{2}, \alpha_g = \frac{\mu_{g1}-\mu_{g2}}{2}$$
 
@@ -109,11 +109,11 @@ $$\phi_g \sim N(\eta_\phi, \sigma^2_\phi), \alpha_g \sim N(\eta_\alpha , \sigma^
 
 \subsection{Empirical Bayes}
 
-We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\phi_g, \alpha_g, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_\phi, \eta_\alpha, \eta_\psi)$ and $\sigma = (\sigma_\phi, \sigma_\alpha, \sigma_\psi)$. We obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \cite{niemi2015empirical}.
+We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\phi_g, \alpha_g, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_\phi, \eta_\alpha, \eta_\psi)$ and $\sigma = (\sigma_\phi, \sigma_\alpha, \sigma_\psi)$. We obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
 
-To obtain normalization factors $\hat{\gamma}$, we use the weighted trimmed mean of $M$ values (TMM). We use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\phi}_g, \hat{\alpha}_g$)\cite{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\phi}_g , \hat{\alpha}_g, \hat{\psi}_g)$, we estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
+To obtain normalization factors $\hat{\gamma}$, we use the weighted trimmed mean of $M$ values (TMM). We use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\phi}_g, \hat{\alpha}_g$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\phi}_g , \hat{\alpha}_g, \hat{\psi}_g)$, we estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
 
-Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \cite{niemi2015empirical}. Equation \ref{eq:2} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
+Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:2} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
 
 \begin{equation}
 \label{eq:2}
@@ -124,10 +124,10 @@ p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto & \prod_{g=1}^{G} \left[ \prod_{
 
 We assume the densities of $\alpha_g$ are normal.
 
-To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \cite{stan2014stan} executed through the RStan interface \cite{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \cite{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:2}. 
+To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:2}. 
 
 
-We ran 4 simultaneous chains with random initial starting values for 1000 burn-in iterations followed by another 1000 iterations retaining every fourth sample for inference. We monitored convergence using the potential scale reduction factor and effective sample size (ESS) for $\phi_g, \alpha_g$ and $\psi_g$ \cite{gelman1992inference}. If the minimum ESS was less than 1000, we reran the chains wit double the iterations for both burn-in and inference. We continued this restarting and doubling until we obtained minimum ESS greater than 1000 for all parameters. 
+We ran 4 simultaneous chains with random initial starting values for 1000 burn-in iterations followed by another 1000 iterations retaining every fourth sample for inference. We monitored convergence using the potential scale reduction factor and effective sample size (ESS) for $\phi_g, \alpha_g$ and $\psi_g$ \citep{gelman1992inference}. If the minimum ESS was less than 1000, we reran the chains wit double the iterations for both burn-in and inference. We continued this restarting and doubling until we obtained minimum ESS greater than 1000 for all parameters. 
 
 \subsection{Gene expression differentiation}
 
@@ -147,7 +147,7 @@ HDE probability is defined as equation \ref{eq:4}
 P(HDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\alpha_g<0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\alpha_g ^ {(m)}<0)
 \end{equation}
 
-We construct a ranked list of genes according to the maximum of gene's LDE and HDE probabilities. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \cite{niemi2015empirical}. 
+We construct a ranked list of genes according to the maximum of gene's LDE and HDE probabilities. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
 
 \section{Alternative DGE tools}
 
