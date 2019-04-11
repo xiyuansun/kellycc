@@ -118,8 +118,7 @@ Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparam
 \begin{equation}
 \label{eq:2}
 \begin{split}
-p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto & \prod_{g=1}^{G} [ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; exp(\mu_{gi} + \hat{\gamma}_{ij}), exp(\psi_g))
- \\ & N(\phi_g ; \hat{\eta}_{\phi}, \hat{\sigma}^2_{\phi}) p(\alpha_g ; \hat{\eta}_{\alpha}, \hat{\sigma}_{\alpha}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  ]
+p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \exp(\mu_{gi} + \hat{\gamma}_{ij}), \exp(\psi_g)) N(\phi_g ; \hat{\eta}_{\phi}, \hat{\sigma}^2_{\phi}) p(\alpha_g ; \hat{\eta}_{\alpha}, \hat{\sigma}_{\alpha}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
 \end{split}
 \end{equation}
 
