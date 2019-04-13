@@ -155,15 +155,72 @@ I construct a ranked list of genes according to the maximum of gene's LDE and HD
 
 I will use the term ebayes to refer to the approach defined in Sections 2.1 - 2.2 and we are assuming normal distribution for half-variety differences.
 
+
+\section{Simulation study based on a maize experiment}
+
+To assess the efficacy of ebayes method to identify genes demonstrating DE, I used a maize dataset with two varieties B73 and Mo17\citep{paschold2012complementation} to determine realistic parameter values for a simulation study.I compared ebayes method to approaches using the R packages {\tt sSeq, DESeq, edgeR, EBSeq, and DESeq2}.
+
+I used ebayes method to obtain normalization factors $\hat{\gamma}$ and gene-specific parameter estimates $\hat{\theta}_g$ for all genes using the {\tt edgeR} package\citep{robinson2010edger} applied to the maize data\citep{paschold2012complementation} on $27619$ genes with average count at least one and at most two zeros read counts for each variety across all the replicates. This analysis produced sample-specific normalization factors of $\hat{\gamma} = (0.923, 0.932, 1.029, 1.022, 0.973, 0.972, 1.063, 1.098)$. The gene-specific parameter estimates were treated as the true parameter values for the simulation study so that my simulated datasets mimicked the existing structure among the gene-variety means of the original maize data.
+
+Using these parameters and normalization factors, I simulated data according to the negative binomial model in equation \ref{eq:1} independently for each gene. For each simulation, I analyzed a subset of $nGenes=1000$ or $nGenes=10000$ selected randomly from original maize count data. I repeated the simulation 5 times for each of 2, 4, and 8 replicates per variety, each of $1\%, 10\%, 30\%$ differentiation expression proportions, reusing normalization factors. 
+
+Given the parameters gene-specific parameter estimates $\hat{\theta}_g$, I set up the simulation scenarios as the following table \ref{tab:Scenario}:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|r|r|r|r|r|}
+\hline
+sc & nGenes & nSamples & pDiff \\ 
+\hline
+1 & 10000 & 8 & 0.10 \\ 
+\hline
+2 & 10000 & 8 & 0.30 \\ 
+\hline
+3 & 10000 & 8 & 0.01 \\
+\hline
+4 & 10000 & 4 & 0.10 \\
+\hline
+5 & 10000 & 4 & 0.30 \\
+\hline
+6 & 10000 & 4 & 0.01 \\ 
+\hline
+7 & 10000 & 16 & 0.10 \\
+\hline
+8 & 10000 & 16 & 0.30 \\ 
+\hline
+9 & 10000 & 16 & 0.01 \\
+\hline
+10& 1000 & 8 & 0.10 \\
+\hline
+11 & 1000 & 8 & 0.30 \\
+\hline
+12 & 1000 & 8 & 0.01 \\ 
+\hline
+13 & 1000 & 4 & 0.10 \\
+\hline
+14 & 1000 & 4 & 0.30 \\
+\hline
+15 & 1000 & 4 & 0.01 \\ 
+\hline
+16 & 1000 & 16 & 0.10 \\
+\hline
+17 & 1000 & 16 & 0.30 \\ 
+\hline
+18 & 1000 & 16 & 0.01 \\ 
+\hline
+\end{tabular}
+\caption{Simulation Scenario Table}
+\label{tab:Scenario}
+\end{table}
+
+
+
 \section{Alternative DGE tools}
 
 Among the alternative methods, {\tt sSeq}\citep{10.1093/bioinformatics/btt143}, {\tt DESeq}\citep{anders2010differential}, {\tt edgeR}\citep{robinson2007moderated}\citep{robinson2010edger}, {\tt EBSeq}\citep{leng2013ebseq}, and {\tt DESeq2}\citep{love2014moderated} assume the Negative Binomial distribution. I biefly overview these approaches. 
 
 
 
-\section{Simulation study based on a maize experiment}
-
-To assess the efficacy of ebayes method to identify genes demonstrating DE, I used a maize dataset with two varieties B73 and Mo17\citep{paschold2012complementation} to determine realistic parameter values for a simulation study.I compared ebayes method to approaches using the R packages {\tt sSeq, DESeq, edgeR, EBSeq, and DESeq2}.
 
 
 
