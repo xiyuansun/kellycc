@@ -94,62 +94,76 @@ I assume
 
 \begin{equation}
 \label{eq:1}
-Y_{gij} \stackrel{ind}{\sim} NB(exp(\mu_{gi}+\gamma_{ij}), exp(\psi_g))
+Y_{gij} \stackrel{ind}{\sim} NB(\exp(\mu_{gi}+\gamma_{ij}), \exp(\psi_g))
 \end{equation}
 
 The data model involves genewise overdispersion $\psi_g$ and a mean that depends on the gene-variety combination through $\mu_{gi}$ and on the sample through $\gamma_{ij}$. The $\mu_{gi}$ terms are of primary scientific interest. The $\gamma_{ij}$ terms are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
 
-Following \citep{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\phi_g$ and half-variety difference $\alpha_g$. For our differential expression study where number of varieties is 2, we let $i=1,2$ indicate the two varieties. The reparameterization is
-
-$$\phi_g = \frac{\mu_{g1}+\mu_{g2}}{2}, \alpha_g = \frac{\mu_{g1}-\mu_{g2}}{2}$$
-
-We assume a hierarchical model for the gene-specific mean parameters and overdispersion parameters. Initially, we assume the variety averages, half-variety averages, and overdispersion parameters follow normal distributions
-
-$$\phi_g \stackrel{ind}{\sim} N(\eta_\phi, \sigma^2_\phi), \alpha_g \stackrel{ind}{\sim} N(\eta_\alpha , \sigma^2_\alpha), \psi_g \stackrel{ind}{\sim} N(\eta_\psi, \sigma^2_\psi) $$
-
-\subsection{Empirical Bayes}
-
-We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\phi_g, \alpha_g, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_\phi, \eta_\alpha, \eta_\psi)$ and $\sigma = (\sigma_\phi, \sigma_\alpha, \sigma_\psi)$. We obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
-
-To obtain normalization factors $\hat{\gamma}$, we use the weighted trimmed mean of $M$ values (TMM). We use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\phi}_g, \hat{\alpha}_g$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\phi}_g , \hat{\alpha}_g, \hat{\psi}_g)$, we estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
-
-Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:2} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
+Following \citep{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\beta_{g1}$ and half-variety difference $\beta_{g2}$. For our differential expression study where number of varieties is 2, we let $i=1,2$ indicate the two varieties. The reparameterization is
 
 \begin{equation}
 \label{eq:2}
+\beta_{g1} = \frac{\mu_{g1}+\mu_{g2}}{2}, \beta_{g2} = \frac{\mu_{g1}-\mu_{g2}}{2}
+\end{equation}
+
+We assume a hierarchical model for the gene-specific mean parameters and overdispersion parameters. Initially, we assume the variety averages, half-variety averages, and overdispersion parameters follow normal distributions
+
+\begin{equation}
+\label{eq:3}
+\beta_{g1} \stackrel{ind}{\sim} N(\eta_{\beta_1}, \sigma^2_{\beta_1}), \beta_{g2} \stackrel{ind}{\sim} N(\eta_{\beta_2} , \sigma^2_{\beta_2}), \psi_g \stackrel{ind}{\sim} N(\eta_\psi, \sigma^2_\psi)
+\end{equation}
+
+\subsection{Empirical Bayes}
+
+We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\beta_{g1}, \beta_{g2}, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_{\beta_1}, \eta_{\beta_2}, \eta_\psi)$ and $\sigma = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$. We obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
+
+To obtain normalization factors $\hat{\gamma}$, we use the weighted trimmed mean of $M$ values (TMM). We use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\beta}_{g1}, \hat{\beta}_{g2}$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\beta}_{g1} , \hat{\beta}_{g2}, \hat{\psi}_g)$, we estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
+
+Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:4} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
+
+\begin{equation}
+\label{eq:4}
 \begin{split}
-& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \exp(\mu_{gi} + \hat{\gamma}_{ij}), \exp(\psi_g)) N(\phi_g ; \hat{\eta}_{\phi}, \hat{\sigma}^2_{\phi}) p(\alpha_g ; \hat{\eta}_{\alpha}, \hat{\sigma}_{\alpha}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
+& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \exp(\mu_{gi} + \hat{\gamma}_{ij}), \exp(\psi_g)) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
 \end{split}
 \end{equation}
 
-We assume the densities of $\alpha_g$ are normal.
-
-To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:2}. 
+To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:4}. 
 
 
 We ran 4 simultaneous chains with random initial starting values for 1000 burn-in iterations followed by another 1000 iterations retaining every fourth sample for inference. We monitored convergence using the potential scale reduction factor and effective sample size (ESS) for $\phi_g, \alpha_g$ and $\psi_g$ \citep{gelman1992inference}. If the minimum ESS was less than 1000, we reran the chains wit double the iterations for both burn-in and inference. We continued this restarting and doubling until we obtained minimum ESS greater than 1000 for all parameters. 
 
 \subsection{Gene expression differentiation}
 
-In the maize context that motivates this work, we are interested in differential expression (DE), i.e. either low differential expression (LDE) or high differential expression (HDE), in gene expression. For a specific gene $g$, LDE occurs when expected expression in the second variety is less than the expected expression of first variety, i.e., $\mu_{g1} > \mu_{g2}$, or equivalently, $\alpha_g>0$, and HDE occurs when the expected expression in the second variety is greater than the expected expression of first variety, i.e., $\mu_{g1} < \mu_{g2}$, or equivalently, $\alpha_g<0$. We evaluate these probabilities based on empirical Bayes estimates of their posterior probabilities, e.g., 
+In the maize context that motivates this work, we are interested in differential expression (DE), i.e. either low differential expression (LDE) or high differential expression (HDE), in gene expression. For a specific gene $g$, LDE occurs when expected expression in the second variety is less than the expected expression of first variety, i.e., $\mu_{g1} > \mu_{g2}$, or equivalently, $\beta_{g2}>0$, and HDE occurs when the expected expression in the second variety is greater than the expected expression of first variety, i.e., $\mu_{g1} < \mu_{g2}$, or equivalently, $\beta_{g2}<0$. We evaluate these probabilities based on empirical Bayes estimates of their posterior probabilities, e.g., 
 
 \begin{equation}
-\label{eq:3}
-P(LDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\alpha_g>0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\alpha_g ^ {(m)}>0)
+\label{eq:5}
+P(LDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\beta_{g2}>0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)}>0)
 \end{equation}
 
-where $\alpha_g^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes posterior.
+where $\beta_{g2}^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes posterior.
 
-HDE probability is defined as equation \ref{eq:4}
+HDE probability is defined as equation \ref{eq:6}
 
 \begin{equation}
-\label{eq:4}
-P(HDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\alpha_g<0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\alpha_g ^ {(m)}<0)
+\label{eq:6}
+P(HDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\beta_{g2}<0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)}<0)
 \end{equation}
 
-We construct a ranked list of genes according to the maximum of gene's LDE and HDE probabilities. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
+I construct a ranked list of genes according to the maximum of gene's LDE and HDE probabilities. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
+
+I will use the term ebayes to refer to the approach defined in Sections 2.1 - 2.2 and we are assuming normal distribution for half-variety differences.
 
 \section{Alternative DGE tools}
+
+Among the alternative methods, {\tt sSeq}\citep{10.1093/bioinformatics/btt143}, {\tt DESeq}\citep{anders2010differential}, {\tt edgeR}\citep{robinson2007moderated}\citep{robinson2010edger}, {\tt EBSeq}\citep{leng2013ebseq}, and {\tt DESeq2}\citep{love2014moderated} assume the Negative Binomial distribution. I biefly overview these approaches. 
+
+
+
+\section{Simulation study based on a maize experiment}
+
+To assess the efficacy of ebayes method to identify genes demonstrating DE, I used a maize dataset with two varieties B73 and Mo17\citep{paschold2012complementation} to determine realistic parameter values for a simulation study.I compared ebayes method to approaches using the R packages {\tt sSeq, DESeq, edgeR, EBSeq, and DESeq2}.
 
 
 
