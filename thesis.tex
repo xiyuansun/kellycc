@@ -94,16 +94,18 @@ I assume
 
 \begin{equation}
 \label{eq:1}
-Y_{gij} \stackrel{ind}{\sim} NB(\exp(\mu_{gi}+\gamma_{ij}), \exp(\psi_g))
+Y_{gij} \stackrel{ind}{\sim} NB(\exp(\lambda_{gi}+\gamma_{ij}), \exp(\psi_g))
 \end{equation}
 
-The data model involves genewise overdispersion $\psi_g$ and a mean that depends on the gene-variety combination through $\mu_{gi}$ and on the sample through $\gamma_{ij}$. The $\mu_{gi}$ terms are of primary scientific interest. The $\gamma_{ij}$ terms are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
+with mean $\mu_{gij} = \exp{(\lambda_{gi}+\gamma_{ij})}$ and dispersion $\phi_g = \exp{(\psi_g)}$
+
+where $\gamma_{ij}$ terms are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
 
 Following \citep{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\beta_{g1}$ and half-variety difference $\beta_{g2}$. For our differential expression study where number of varieties is 2, we let $i=1,2$ indicate the two varieties. The reparameterization is
 
 \begin{equation}
 \label{eq:2}
-\beta_{g1} = \frac{\mu_{g1}+\mu_{g2}}{2}, \beta_{g2} = \frac{\mu_{g1}-\mu_{g2}}{2}
+\beta_{g1} = \frac{\lambda_{g1}+\lambda_{g2}}{2}, \beta_{g2} = \frac{\lambda_{g1}-\lambda_{g2}}{2}
 \end{equation}
 
 We assume a hierarchical model for the gene-specific mean parameters and overdispersion parameters. Initially, we assume the variety averages, half-variety averages, and overdispersion parameters follow normal distributions
@@ -113,45 +115,49 @@ We assume a hierarchical model for the gene-specific mean parameters and overdis
 \beta_{g1} \stackrel{ind}{\sim} N(\eta_{\beta_1}, \sigma^2_{\beta_1}), \beta_{g2} \stackrel{ind}{\sim} N(\eta_{\beta_2} , \sigma^2_{\beta_2}), \psi_g \stackrel{ind}{\sim} N(\eta_\psi, \sigma^2_\psi)
 \end{equation}
 
-\subsection{Empirical Bayes}
+The link function is \ref{eq:4}
+\begin{equation}
+\label{eq:4}
+log(\mu_{gij}) = \lambda_{gi} + \gamma_{ij} = x_i^T \beta_g + log(N_{ij})
+\end{equation}
+
+
+\subsection{Empirical Bayes Method}
 
 We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\beta_{g1}, \beta_{g2}, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_{\beta_1}, \eta_{\beta_2}, \eta_\psi)$ and $\sigma = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$. We obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
 
 To obtain normalization factors $\hat{\gamma}$, we use the weighted trimmed mean of $M$ values (TMM). We use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\beta}_{g1}, \hat{\beta}_{g2}$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\beta}_{g1} , \hat{\beta}_{g2}, \hat{\psi}_g)$, we estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
 
-Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:4} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
-
-\begin{equation}
-\label{eq:4}
-\begin{split}
-& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \exp(\mu_{gi} + \hat{\gamma}_{ij}), \exp(\psi_g)) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
-\end{split}
-\end{equation}
-
-To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:4}. 
-
-
-We ran 4 simultaneous chains with random initial starting values for 1000 burn-in iterations followed by another 1000 iterations retaining every fourth sample for inference. We monitored convergence using the potential scale reduction factor and effective sample size (ESS) for $\phi_g, \alpha_g$ and $\psi_g$ \citep{gelman1992inference}. If the minimum ESS was less than 1000, we reran the chains wit double the iterations for both burn-in and inference. We continued this restarting and doubling until we obtained minimum ESS greater than 1000 for all parameters. 
-
-\subsection{Gene expression differentiation}
-
-In the maize context that motivates this work, we are interested in differential expression (DE), i.e. either low differential expression (LDE) or high differential expression (HDE), in gene expression. For a specific gene $g$, LDE occurs when expected expression in the second variety is less than the expected expression of first variety, i.e., $\mu_{g1} > \mu_{g2}$, or equivalently, $\beta_{g2}>0$, and HDE occurs when the expected expression in the second variety is greater than the expected expression of first variety, i.e., $\mu_{g1} < \mu_{g2}$, or equivalently, $\beta_{g2}<0$. We evaluate these probabilities based on empirical Bayes estimates of their posterior probabilities, e.g., 
+Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:5} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
 
 \begin{equation}
 \label{eq:5}
-P(LDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\beta_{g2}>0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)}>0)
+\begin{split}
+& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \exp(\lambda_{gi} + \hat{\gamma}_{ij}), \exp(\psi_g)) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
+\end{split}
 \end{equation}
 
-where $\beta_{g2}^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes posterior.
+To perform the conditional posterior inference on the gene-specific parameters, we use the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:5}. 
 
-HDE probability is defined as equation \ref{eq:6}
+
+\subsection{Gene expression differentiation}
+
+In the maize context that motivates this work, we are interested in differential expression (DE). For a specific gene $g$, non-DE occurs when expected expression in the second variety is the same as the expected expression of first variety, i.e., $\mu_{g1} = \mu_{g2}$, or equivalently, $\beta_{g2}=0$.  I evaluate measurements based on empirical Bayes estimates of their posterior probabilities, e.g., 
 
 \begin{equation}
 \label{eq:6}
-P(HDE_g | y, \hat{\pi}, \hat{\gamma}) = P(\beta_{g2}<0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)}<0)
+P(DE_g | y, \hat{\pi}, \hat{\gamma}) =min( P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}),  P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma}))
 \end{equation}
 
-I construct a ranked list of genes according to the maximum of gene's LDE and HDE probabilities. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
+$$P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)} < 0)$$
+
+$$P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)} > 0) $$
+
+where $\beta_{g2}^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes posterior.
+
+
+
+I construct a ranked list of genes according to the minimum of $P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma})$ and $P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma})$. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
 
 I will use the term ebayes to refer to the approach defined in Sections 2.1 - 2.2 and we are assuming normal distribution for half-variety differences.
 
@@ -162,7 +168,16 @@ To assess the efficacy of ebayes method to identify genes demonstrating DE, I us
 
 I used ebayes method to obtain normalization factors $\hat{\gamma}$ and gene-specific parameter estimates $\hat{\theta}_g$ for all genes using the {\tt edgeR} package\citep{robinson2010edger} applied to the maize data\citep{paschold2012complementation} on $27619$ genes with average count at least one and at most two zeros read counts for each variety across all the replicates. This analysis produced sample-specific normalization factors of $\hat{\gamma} = (0.923, 0.932, 1.029, 1.022, 0.973, 0.972, 1.063, 1.098)$. The gene-specific parameter estimates were treated as the true parameter values for the simulation study so that my simulated datasets mimicked the existing structure among the gene-variety means of the original maize data.
 
-Using these parameters and normalization factors, I simulated data according to the negative binomial model in equation \ref{eq:1} independently for each gene. For each simulation, I analyzed a subset of $nGenes=1000$ or $nGenes=10000$ selected randomly from original maize count data. I repeated the simulation 5 times for each of 2, 4, and 8 replicates per variety, each of $1\%, 10\%, 30\%$ differentiation expression proportions, reusing normalization factors. 
+Using these parameters and normalization factors, I simulated data according to the negative binomial model in equation \ref{eq:1} independently for each gene, where $\exp{\psi_g}$ is the genewise dispersion calculated by Cox and Reid adjusted profile likelihood (CR-APL) method, the normalized factors $\gamma_{ij} = log(N_{ij})$, link function $\lambda_{gi} = X\beta_{gi}$, and the expected value $\mu_{gij} = \exp{(\lambda_{gi}+\gamma_{ij})} = N_{ij} \times \exp{(X\beta_{gi})}$. In the GLM setting, the mean response $\mu_{gij}$ is linked to a linear predictor with the base $e$ logarithm link according to equation \ref{eq:7}
+
+\begin{equation}
+\label{eq:7}
+log(\mu_{gij}) = \lambda_{gi}+\gamma_{ij} = X\beta_{gi} + log(N_{ij})
+\end{equation}
+
+where $X$ is the design matrix containing the covariates (varieties), $\beta_g$ is a vector of regression parameters, and $N_{ij}$ is the effective library size for variety $i$ replicate $j$.
+
+For each simulation, I analyzed a subset of $nGenes=1000$ or $nGenes=10000$ selected randomly from original maize count data. The library size of each sample in a simulated dataset was generated from a uniform distribution whose parameters were estimated from the maximum and minimum of the original maize count data. I repeated the simulation 5 times for each of 2, 4, and 8 replicates per variety, each of $1\%, 10\%, 30\%$ differentiation expression proportions, reusing normalization factors. 
 
 Given the parameters gene-specific parameter estimates $\hat{\theta}_g$, I set up the simulation scenarios as the following table \ref{tab:Scenario}:
 
@@ -213,20 +228,36 @@ sc & nGenes & nSamples & pDiff \\
 \label{tab:Scenario}
 \end{table}
 
+For a particular gene, the truth was determined via the proportion of differential gene expression (pDiff) in the scenario setup. I randomly selected $nGenes \times (1-pDiff)$ genes and assign the expected variety count means the same as $\mu_{g1} = \mu_{g2} = 1/(n_1+n_2)\times \sum_{i=1}^2 \sum_{j=1}^{n_i} Y_{gij}$ for the selected non-DE genes. 
+
 
 
 \section{Alternative DGE tools}
 
-Among the alternative methods, {\tt sSeq}\citep{10.1093/bioinformatics/btt143}, {\tt DESeq}\citep{anders2010differential}, {\tt edgeR}\citep{robinson2007moderated}\citep{robinson2010edger}, {\tt EBSeq}\citep{leng2013ebseq}, and {\tt DESeq2}\citep{love2014moderated} assume the Negative Binomial distribution. I biefly overview these approaches. 
+I compared the ebayes method to five alternative methods. To follow the recent progress in the RNA-Seq DE area, I selected two widely used methods, {\tt edgeR, DESeq}, and three other newly released DE analysis packages {\tt DESeq2, EBSeq, and sSeq}. For each method, I attempted to provide a measure of the strength of DE for each gene such that small values of this measure indicate support for DE. 
+
+Among the alternative methods, {\tt sSeq}\citep{yu2013sseq}, {\tt DESeq}\citep{anders2010differential}, {\tt edgeR}\citep{robinson2007moderated}\citep{robinson2010edger}, {\tt EBSeq}\citep{leng2013ebseq}, and {\tt DESeq2}\citep{love2014moderated} assume the Negative Binomial distribution.
 
 
+{\tt edgeR} is designed for the analysis of replicated count based expresison data and is an implementation of methodology developed by Robinson and Smyth \citep{robinson2007moderated}.{\tt edgeR} determines DE using empirical Bayes estimation and exact tests based on a negative binomial model. In particular, an empirical Bayes procedure is used to moderate the degree of overdispersion across genes by borrowing information between genes.An exact test analogous to Fisher's exact test but adapted to overdispersed data is used to assess DE for each gene. As default, the TMM normalization procedure is carried out to account for the different sequencing depths between the samples, wheareas the Benjamini-Hochberg procedure is used to control the FDR\citep{seyednasrollah2013comparison}. To construct a measure of DE, I computed the maximum likelihood estimates of the $\mu_{gi}$ parameters for all genes using edgeR's built-in Fisher scoring algorithm, and then used exact tests to calculate p-value for each gene $p_g$ for testing $H_{g0}: \mu_{g1} = \mu_{g2}$, which are adjusted for multiplicities using Benjamini-Hochberg. I use $p_g$ as a measure negatively associated with strength of evidence for DE. {\tt edgeR} moderates the dispersion estimate for each gene toward a local estimate from genes with similar expression strength, using a weighted conditional strength.
+
+{\tt DESeq} also models the count of reads with the Negative Binomial distribution, but modeles the observed relationship between mean and variance when estimating dispersion, allowing a more general, data-driven parameter estimation\citep{seyednasrollah2013comparison}. It has the same hypothesis statement and exact test as {\tt edgeR}. {\tt DESeq} detects and corrects dispersion estimates that are too low through modeling of the dependence of the dispersion on the average expression strength over all samples. 
+
+{\tt DESeq2} is a successor to {\tt DESeq}.{\tt DESeq2} sequentially estimates a prior distribution for the true dispersion values around the fit, then provide the maximum a posteriori (MAP) as the final estimate. It differs from {\tt DESeq}, which used the maximum of the fitted curve and the gene-wise dispersion estimate as the final estimate. It also differs from {\tt edgeR}, as {\tt DESeq2} estimates the width of the prior distribution from the data and therefore automatically controls the amount of shrinkage based on the observed properties of the data. In contrast, {\tt edgeR} require a user-adjustable parameter, the prior degrees of freedom, which weighs the contribution of the individual gene estimate and dispersion fit\citep{love2014moderated}. 
 
 
+{\tt sSeq} can be used to test for differential expression between any two varieties based on the shrinkage estimation of dispersion in Negative Binomial models\citep{yu2013sseq}.The model has little practical difference from the model in {\tt DESeq}. Yu and Huber use the Hansen's generalized shrinkage estimator $\hat{\phi}_g$ in conjunction with the NB distribution to test genes for differential expression. They follow {\tt edgeR, DESeq} by testing $H_{g0}: \mu_{g1} = \mu_{g2}$ per gene with the exact test. Under $H_{g0}$, the p-values are calculated with respect to $Y_{gi.} \stackrel{H_{g0}}{\sim} NB(\sum_{j} s_{ij}\mu_{g}, \phi_{g}/\sum_{j} s_{ij})$ and are adjusted to control the false discovery rate\citep{yu2013sseq}. 
 
+{\tt EBSeq} provides posterior probabilities as the evidence in favor of DE. Estimates of the gene-specific means and variances are obtained via method-of-moments, and the hyperparameters are obtained via the expectation-maximization (EM) algorithm\citep{leng2013ebseq}. {\tt EBSeq} estimates the posterior likelihoods of differential expression by the aid of empirical Bayesian methods. To account for the different sequencing depths, a median normalization procedure similar to {\tt DESeq} is used. 
+
+
+\chapter{RESULT}
 
 \section{Methods Comparison Result}
 
-Figure \ref{auc} is my facetted auc plot.
+For the methods in Chapter 2, I sorted genes according to the computed measure of the strength of evidence for DE. From these sorted lists, I calculated area under ROC curve (AUC) values to evaluate the ability of these methods to distinguish genes with DE. 
+
+Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in \ref{tab:Scenario}. I facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. 
 
 \begin{figure}[h!tb] 
 \includegraphics[scale=0.4]{auc_facet_plot}
@@ -234,6 +265,13 @@ Figure \ref{auc} is my facetted auc plot.
 \label{auc}
 \end{figure}
 
+In terms of AUC values, ebayes method always have promising DE analysis performance.
+
+When number of samples increases, AUC values of all methods increase. 
+
+When DE proportion increases, the difference among the methods decreases. 
+
+There is no obvious difference when number of genes differ.
 
 
 %\appendixtitle 
