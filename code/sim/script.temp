@@ -1,0 +1,4 @@
+Error in do.ply(i) : 
+  task 1 failed - "missing value where TRUE/FALSE needed"
+Error in while (diverge) { : missing value where TRUE/FALSE needed
+Error: object 'analysis' not found

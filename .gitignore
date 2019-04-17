@@ -5,7 +5,7 @@
 *.Rproj
 
 # Add folders here
-code/*
+
 
 # LaTeX files
 *.aux
