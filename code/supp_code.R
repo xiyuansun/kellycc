@@ -535,6 +535,116 @@ trimmed_parms <- list(y=trimmed_object, fc=trimmed_fc[-nofit,],
                       nofit=nofit)
 
 saveRDS(trimmed_parms, "./sim/trimmed_parms.rds")
+#(head(trimmed_object@.Data[[1]]))
+rna_count_data <- trimmed_object@.Data[[1]]
+colnames(rna_count_data) <- c("B73_1", "B73_2", "B73_3","B73_4","Mo17_1", "Mo17_2", "Mo17_3","Mo17_4")
+rna_cond <- factor(c("B73", "B73", "B73","B73","Mo17", "Mo17", "Mo17","Mo17"))
+
+rna_de <- of_DE_call(rawdata = rna_count_data, condition=rna_cond)
+
+
+
+# DE analysis based on the rna_count_data
+of_DE_call <- function(rawdata, condition) {
+  #rawdata = rna_count_data; condition=trimmed_cond
+  #DESeq2#
+  dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = data.frame(condition), design = ~condition)
+  dds <- estimateSizeFactors(dds)
+  dds <- estimateDispersions(dds)
+  dds <- nbinomWaldTest(dds)
+  res <- results(dds)
+  pval = res$pval
+  padj = res$padj
+  res = cbind(pval, padj)
+  ds2 <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #DESeq#
+  DESeq_cds = newCountDataSet(rawdata, condition)
+  DESeq_cds = estimateSizeFactors(DESeq_cds)
+  DESeq_cds = estimateDispersions(DESeq_cds)
+  pval = nbinomTest(DESeq_cds, unique(condition)[1],unique(condition)[2], pvals_only=TRUE)
+  padj = p.adjust( pval, method="BH")
+  res = cbind(pval, padj)
+  ds <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #edgeR#
+  edgeR_cds = DGEList(rawdata, group = condition )
+  edgeR_cds = calcNormFactors( edgeR_cds )
+  edgeR_cds = estimateCommonDisp( edgeR_cds )
+  edgeR_cds = estimateTagwiseDisp( edgeR_cds )
+  res = exactTest(edgeR_cds, pair =c(unique(condition)[1],unique(condition)[2]))$table
+  pval = res$PValue
+  padj = p.adjust( pval, method="BH")
+  res = cbind(pval, padj)
+  er <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #sSeq#
+  as.character(condition) -> sSeq_condition
+  res <- nbTestSH(rawdata, sSeq_condition, condA = unique(sSeq_condition)[1],condB = unique(sSeq_condition)[2])
+  pval = res$pval
+  padj = p.adjust( pval, method="BH")
+  res = cbind(pval, padj)
+  ss <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #NPEBSeq#
+  #G1data <- rawdata[,which(condition==levels(condition)[1])]
+  #G2data <- rawdata[,which(condition==levels(condition)[2])]
+  #maxid1<-which.max(colSums(G1data))   
+  #maxid2<-which.max(colSums(G2data))
+  #Q1<-compu_prior(G1data[,maxid1],maxiter=100,grid.length=1000)
+  #Q2<-compu_prior(G2data[,maxid2],maxiter=3000,grid.length=1000)
+  #resg<-NPEBSeq_biordf(G1data,G2data,Q1,Q2)  
+  
+  #EBSeq
+  
+  Sizes = MedianNorm(rawdata)
+  EBOut = EBTest(Data = rawdata, Conditions = condition,sizeFactors = Sizes, maxround = 5)
+  data.frame(pval=1-GetPP(EBOut)) -> temp0
+  temp1 = rawdata
+  merge(temp1, temp0, all.x=TRUE, by.x=0, by.y=0)-> temp2
+  pval = temp2[,"pval"]
+  names(pval) = temp2[,"Row.names"]
+  pval = pval[rownames(rawdata)]
+  padj = pval
+  res = cbind(pval, padj)
+  eb <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  
+  #AMAP.Seq#
+  #mydata = RNASeq.Data(rawdata, size=Norm.GMedian(rawdata), group = sSeq_condition)
+  #decom.est=MGN.EM(mydata,nK=3,p0=NULL,d0=0,iter.max=10,nK0=3)
+  #res=test.AMAP(mydata, MGN=decom.est$MGN,FC=1.0)
+  #pval = res$prob
+  #padj = res$fdr
+  #res = cbind(pval, padj)
+  #am <- as.matrix(res)
+  #rm(res, pval, padj)	
+  
+  #packages = c("ds2", "ds","er","ss","eb")
+  packages = c("ds2", "ds","er","ss", "eb")
+  
+  de = rep(TRUE, dim(rawdata)[1])
+  for(i in packages) {
+    temp = length(which(get(i)[,"padj"] < 0.05))
+    print(paste(i,": number of DE called",temp))
+    de = de & get(i)[,"padj"] < 0.05
+  }	
+  print(paste("intersection :",length(which(de))))
+  de[is.na(de)] <- FALSE
+  de
+}
+
+
+rna_de <- of_DE_call(rawdata = rna_count_data, condition=trimmed_cond)
+
+xtable::xtable(as.data.frame(head(rna_count_data[!rna_de, ])))
+
+
 
 #print the estimated parameters
 params <- trimmed_parms

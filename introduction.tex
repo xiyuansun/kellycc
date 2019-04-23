@@ -1,42 +1,57 @@
 % Introduction of the Thesis Template File
-\chapter{OVERVIEW}
+\chapter{Overview}
 
 
 
 \section{Introduction}
 
-Differential expression exists when the expected value of a phenotype differs from the expected phenotypic values of the other variety. Ji et al. \citep{ji2014estimation} introduced an approach to assess gene expression heterosis using microarray data under the assumption that these data are continuous. They built a normal hierarchical model for microarray measurements of transcript abundance that allows borrowing of information across genes to estimate means and variances. They introduced an empirical Bayes framework that first estimates model hyperparameters, then estimates the posterior distribution for gene-specific parameters conditional on those hyperparameters, and finally computes heterosis probabilities based on integrals of regions under this posterior. Building on the work of Ji et al. with the normal data model, \citep{niemi2015empirical} constructed a hierarchical model based on a negative binomial data model. They utilized an empirical Bayes approach to obtain estimates of the hyperparameters and the posterior distributions for the gene-specific parameters conditional on those hyperparameters. In this report, I applied Niemi's empirical Bayes method in the differential gene expression analysis context. 
+A gene is regarded as differentially expressed when the expected count reads of this gene corresponding to one condition differs from that of another condition. Finding genes that are differntially expressed between conditions is an integral part of understanding the molecular basis of phenotypic variation. High-throughout sequencing of cDNA (RNA-Seq) has been used to quantify the abundance of mRNA corresponding to different genes\citep{soneson2013comparison}.
 
 
-The remainder of the report proceeds as follows.Chapter 2.1-2.2 presents the hierarchical model, an empirical Bayes method of estimating the parameters, and the calculation of posterior probabilities of DE. Chapter 2.3 presents a simulation study based on a maize experiment and compares Niemi et al's approach to alternative methods. Chapter 3 summarizes the result with a facetted AUC plot.
+RNA-Seq is a new approach to transcriptome analysis based on next-generation sequencing technology. RNA-Seq data are a set of short RNA reads that are often summarized as discrete counts. The negative binomial distribution has become widely used to analyze RNA-Seq data which allows more flexibility in assigning between-sample variation\citep{ching2014power}. We analyzed simulated datasets with a defined total number of genes, total number of samples, and proportion of DE genes. We compared eBayes\citep{niemi2015empirical} method to the alternative methods implemented by existing R packages, such as {\tt edgeR, DESeq, DESeq2, sSeq, EBSeq}. All methods are available within the R framework and take a matrix of counts as input, i.e., the number of reads mapping to each genomic feature of interest in each of a number of samples. We evaluated the methods based on simulated datasets, as demonstrated in RNA-Seq Data section. 
 
 
-\section{RNA-Seq Count Data}
-The focus here is on methods for count-based differential expression (DE) analyses. Thus, the starting point here is a count table of features-by-samples, such as those from the Paschold project \citep{paschold2012complementation}.
+Ji et al. \citep{ji2014estimation} introduced an approach to assess gene expression heterosis using microarray data under the assumption that these data are continuous. They built a normal hierarchical model for microarray measurements of transcript abundance that allows borrowing of information across genes to estimate means and variances. They introduced an empirical Bayes framework that first estimates model hyperparameters, then estimates the posterior distribution for gene-specific parameters conditional on those hyperparameters, and finally computes heterosis probabilities based on integrals of regions under this posterior. Building on the work of Ji et al. with the normal data model, \citep{niemi2015empirical} constructed a hierarchical model based on a negative binomial data model. They utilized an empirical Bayes approach to obtain estimates of the hyperparameters and the posterior distributions for the gene-specific parameters conditional on those hyperparameters. In this creative component report, we applied Niemi's empirical Bayes method in the differential gene expression analysis context, and call it {\tt eBayes} method. 
 
-The number of reads mapped to a given gene is considered to be the estimate of the expression level of that gene. The end product of a RNA-seq experiment is a sequence of read counts, typically represented as a matrix with rows representing genes and columns representing samples from two varieties, as in Table \ref{tab:RNA-Seq Data}. In this example, there are $V=2$ varieties, $n_1 = 2$ samples in the first variety, $n_2=2$ samples in the second variety, and $G=10000$ genes. My interest is in the detection of differentially expressed genes among the varieties. 
+Five other methods for differential expression analysis if RNA-Seq data were also evaluated in this study. All of them work on the count data directly: {\tt edgeR}\citep{robinson2010edger}, {\tt DESeq}\citep{anders2010differential}, {\tt DESeq2}\cite{love2014moderated}, {\tt sSeq}\citep{yu2013sseq}, {\tt EBSeq}\citep{leng2013ebseq}. More detailed descriptopns of the methods can be found in the Methods section and in the respective original publication. 
 
-\begin{table}[H]
-\begin{center}
-    \begin{tabular}{|c|c|c|c|c|c|}
-      \hline
-      Gene &Variety1 Sample1 &Variety1 Sample2 &Variety2 Sample1 & Variety2 Sample2 \\
-      \hline
-      1 & 4 & 1 & 100 & 88 \\
-      \hline
-      2 & 65 & 48 & 55 & 59 \\
-      \hline
-      3 & 0 & 1 & 0 & 2\\
-      \hline
-      ... & ... & ... & ... & ...\\
-      \hline
-       10000 & 3 & 1 & 1 & 2\\
-       \hline
-    \end{tabular}
-\end{center}
-\caption{RNA-Seq Count Data Example}
+The six methods were evaluated based on simulated datasets, where we could control the settings and the true differential expression status of each gene. Details regarding the different simulation scenarios can be found in the Simulation section. We explored each method's ability to rank truly DE genes ahead of non-DE genes. This was evaluated in terms of the area under a Receiver Operating Characteristic (ROC) curve (AUC). 
+
+The remainder of the report proceeds as follows.Chapter 2.1-2.2 presents the hierarchical model, an empirical Bayes method of estimating the parameters, and the calculation of posterior probabilities of DE. Chapter 3 presents a simulation study based on a maize experiment and compares Niemi et al's approach to alternative methods. Chapter 4 summarizes the result with a facetted AUC plot and includes the discussion part for future research direction. 
+
+
+\section{RNA-Seq Data}
+
+RNA-Seq is a next generation sequencing (NGS) procedure of the entire transcriptome by which one can measure the expression of several features, such as gene expression. The number of reads mapped to a given gene is considered to be the estimate of the expression level of that feature using the technology\citep{marioni2008rna}.
+
+The end-product of a RNA-seq experiment id a sequence of read counts, typically a matrix with rows representing genes and columns representing samples from different gene varieties, as in Table \ref{tab:RNA-Seq Data}. In this example, there are $V=2$ gene varieties: $B73, Mo17$, $4$ replicates of each variety. The genes shown above the double horizontal line are part of the genes with differential expression between the two varieties. The genes shown below the double horizontal line are examples of the non-DE genes. 
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|}
+  \hline
+ & B73\_1 & B73\_2 & B73\_3 & B73\_4 & Mo17\_1 & Mo17\_2 & Mo17\_3 & Mo17\_4 \\ 
+  \hline
+AC148152.3\_FG001 &   3 &   4 &   6 &   0 &   8 &  17 &  18 &  20 \\ 
+  AC148152.3\_FG008 &   3 &   3 &   4 &   1 &  31 &  40 &  45 &  49 \\ 
+  AC152495.1\_FG002 &  33 &  46 &  18 &  13 &   4 &   0 &   2 &   6 \\ 
+  AC152495.1\_FG017 &  41 &  44 &  16 &  13 &   2 &   2 &   2 &   0 \\ 
+  AC184130.4\_FG012 &  24 &  47 &  18 &  21 & 110 & 144 & 121 &  96 \\ 
+  AC184133.3\_FG001 &   0 &   1 &   1 &   0 &  14 &  13 &   4 &   9 \\ 
+   \hline
+   \hline
+AC148152.3\_FG005 & 2323 & 1533 & 1932 & 1945 & 2070 & 1582 & 2196 & 1882 \\ 
+  AC148167.6\_FG001 & 672 & 598 & 728 & 713 & 743 & 655 & 821 & 824 \\ 
+  AC149475.2\_FG002 & 459 & 438 & 451 & 483 & 467 & 448 & 634 & 532 \\ 
+  AC149475.2\_FG003 & 1184 & 976 & 1131 & 1206 & 891 & 743 & 1288 & 1107 \\ 
+  AC149475.2\_FG005 & 551 & 535 & 360 & 353 & 550 & 524 & 492 & 440 \\ 
+  AC149475.2\_FG007 & 245 & 214 & 169 & 159 & 297 & 262 & 210 & 302 \\ 
+   \hline
+   
+\end{tabular}
+\caption{Maize RNA-Seq Data (Paschold,2012)}
 \label{tab:RNA-Seq Data}
 \end{table}
 
-The focus of this report is to provide a comparison of the methods of detecting differentially expressed genes, i.e., genes for which the counts of reads change between variaties more systematically than as expected by random chance \citep{oshlack2010rna}. In this report, I review statistical methods for detecting differential expression in the RNA-seq data. I summarize the results of a simulation study. I briefly describe some existing open source R and Bioconductor software for testing differential expression for RNA-seq data.
+Our interest is in the detection of differentially expressed genes between the two varieties, i.e., genes for which read count distributions differ between varieties. 
 
