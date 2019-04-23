@@ -9,7 +9,9 @@ You will need to update the following files in this template:
 - titlepage.tex
 - abstract.tex
 - introduction.tex
-- thesis.tex
+- methods.tex
+- simulation.tex
+- result.tex
 - acknowledgements.tex
 - dedication.tex
 - mybib.bib

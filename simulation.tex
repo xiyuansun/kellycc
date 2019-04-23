@@ -1,0 +1,122 @@
+\chapter{Simulation Study}
+
+\section{Simulation Study based on a maize experiment}
+
+We built a simulation framework that aims to reflect the reality of RNA-seq data. 
+
+\subsection{Parameter Estimation}
+
+To assess the efficacy of eBayes method to identify DE genes, we used a maize dataset with varieties $B73$ and $Mo17$ \citep{paschold2012complementation} to determine realistic parameter values for our simulation study. Chapter 2 describes the maize dataset in detail. 
+
+We removed the genes with zero counts in all conditions, as well as genes whose maximum counts are less than $5$ as recommended \citep{rau2013data}.The description of parameters for the real RNA-seq dataset is summarized in Table \ref{tab:Parameter-Estimation}. 
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|r|r|}
+\hline
+Number of Trimmed Genes & 27619 \\ 
+\hline
+Number of Samples & 8\\
+\hline
+  Median expression ($\log{2}$ counts per million) & 3.92 \\ 
+  \hline
+  Median dispersion & 0.03 \\ 
+  \hline
+  Median $\log{2}$ fold change (LFC) of genes & 0.39 \\ 
+  \hline
+  Median library size (sum of total counts, $\log{10}$) & 6.99 \\ 
+   \hline
+\end{tabular}
+
+\caption{Description of estimated parameters}
+\label{tab:Parameter-Estimation}
+
+
+\end{table}
+
+We estimated parameters from the maize RNA-seq data \citep{paschold2012complementation}, and fit it by GLM with negative binomial distribution. The genewise dispersions for negative binomial GLMs were estimated using Cox-Reid Adjusted Profile Likelihood\citep{mccarthy2012differential}. This method modifies the maximum likelihood estimate of dispersion by accounting for the experimental design through Fisher's information matrix in the log-likelihood function\citep{mccarthy2012differential}. 
+
+In summary, the library size (reads mapped to the transcriptome) is $\log{10}$ mean of $6.99$, the normalized median gene expressions $\log{2}$ counts per million (CPM) is $3.92$, and the median LFCs of DE genes is $0.39$. 
+
+
+\subsection{Model}
+
+In our simulated data, we used a generalized linear model (GLM) with negative binomial distribution. For the dataset of two groups, the counts for a particular gene $g$ in group $i$ replicate $j$ were modeled by equation \ref{eq:1}:
+
+\begin{equation}
+\label{eq:1}
+Y_{gij} \stackrel{ind}{\sim} NB(mean = \mu_{gi}, var = \mu_{gi}(1+\mu_{gi}\phi_{g})
+\end{equation}
+where $\phi_g$ is the genewise dispersion calculated by the CR-APL method, and the expected value $\mu_{gi}$ sis a function of the library size of group $i$ replicate $j$ as equation \ref{eq:2}:
+
+\begin{equation}
+\label{eq:2}
+\log_e \mu_{gi} = x_{gi}^T \beta_g + \log_e N_{ij}
+\end{equation}
+Here $\mu_{gi}$ is the expected counts of gene $g$ in group $i$, $N_{ij}$ is the normalized library size for group $i$ replicate $j$, $\beta_g$ is the vector of coefficients for the two experimental conditions (two groups), $x_{gi}$ is a vector of length $2$ indicating whether group $i$ replicate $j$ belongs to group one or group two in the experiment. The LFC was determined by the difference of the two elements of $\beta_g$. 
+
+
+
+\subsection{Simulation Scenario}
+
+To evaluate the performance of eBayes method and the alternative methods across a variety of reasonable scenarios, we created several options to make up each scenario. We set up the simulation scenarios as the following table \ref{tab:Scenario}:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|r|r|r|r|r|}
+\hline
+sc & nGenes & nSamples & pDiff(\%) \\ 
+\hline
+1 & 10000 & 8 & 10 \\ 
+\hline
+2 & 10000 & 8 & 30 \\ 
+\hline
+3 & 10000 & 8 & 1 \\
+\hline
+4 & 10000 & 4 & 10 \\
+\hline
+5 & 10000 & 4 & 30 \\
+\hline
+6 & 10000 & 4 & 1 \\ 
+\hline
+7 & 10000 & 16 & 10 \\
+\hline
+8 & 10000 & 16 & 30 \\ 
+\hline
+9 & 10000 & 16 & 1 \\
+\hline
+10& 1000 & 8 & 10 \\
+\hline
+11 & 1000 & 8 & 30 \\
+\hline
+12 & 1000 & 8 & 1 \\ 
+\hline
+13 & 1000 & 4 & 10 \\
+\hline
+14 & 1000 & 4 & 30 \\
+\hline
+15 & 1000 & 4 & 1 \\ 
+\hline
+16 & 1000 & 16 & 10 \\
+\hline
+17 & 1000 & 16 & 30 \\ 
+\hline
+18 & 1000 & 16 & 1 \\ 
+\hline
+\end{tabular}
+\caption{Simulation Scenario Table}
+\label{tab:Scenario}
+\end{table}
+
+
+Given the parameters gene-specific parameter estimates $\mu_{gi}, \phi_g$, 
+
+
+For a particular gene, the truth was determined via the proportion of differential gene expression (pDiff) in the scenario setup. I randomly selected $nGenes \times (1-pDiff)$ genes and assign the expected variety count means the same as $\mu_{g1} = \mu_{g2} = 1/(n_1+n_2)\times \sum_{i=1}^2 \sum_{j=1}^{n_i} Y_{gij}$ for the selected non-DE genes. 
+
+
+
+
+
+
+
