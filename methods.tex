@@ -44,20 +44,20 @@ We assume a hierarchical model for the gene-specific mean parameters and overdis
 
 \subsection{Empirical Bayes Method (eBayes)}
 
-We categorize the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\beta_{g1}, \beta_{g2}, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_{\beta_1}, \eta_{\beta_2}, \eta_\psi)$ and $\sigma = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$. I obtain estimates for the hyperparameters and then base gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
+We categorized the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\beta_{g1}, \beta_{g2}, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_{\beta_1}, \eta_{\beta_2}, \eta_\psi)$ and $\sigma = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$. We obtained estimates for the hyperparameters and then based gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
 
-To obtain normalization factors $\hat{\gamma}$, I use the weighted trimmed mean of $M$ values (TMM). I use edgeR to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\beta}_{g1}, \hat{\beta}_{g2}$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\beta}_{g1} , \hat{\beta}_{g2}, \hat{\psi}_g)$, I estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
+To obtain normalization factors $\hat{\gamma}$, we used the weighted trimmed mean of $M$ values (TMM). We used {\tt edgeR} to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\beta}_{g1}, \hat{\beta}_{g2}$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\beta}_{g1} , \hat{\beta}_{g2}, \hat{\psi}_g)$, I estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
 
 Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, I perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:5} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
 
 \begin{equation}
 \label{eq:5}
 \begin{split}
-& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \exp(\lambda_{gi} + \hat{\gamma}_{ij}), \exp(\psi_g)) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
+& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \mu_{gi}, \phi_g) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
 \end{split}
 \end{equation}
 
-To perform the conditional posterior inference on the gene-specific parameters, I use the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:5}. 
+To perform the conditional posterior inference on the gene-specific parameters, we used the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:5}. We used the default NUTS sampler\citep{annis2017bayesian}.
 
 
 \subsection{Gene expression differentiation}
@@ -66,7 +66,7 @@ In the maize context that motivates this work, I am interested in differential e
 
 \begin{equation}
 \label{eq:6}
-P(DE_g | y, \hat{\pi}, \hat{\gamma}) =min( P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}),  P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma}))
+P(DE_g | y, \hat{\pi}, \hat{\gamma}) =\min( P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}),  P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma}))
 \end{equation}
 
 $$P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)} < 0)$$
@@ -77,9 +77,9 @@ where $\beta_{g2}^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes po
 
 
 
-I construct a ranked list of genes according to the minimum of $P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma})$ and $P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma})$. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
+We constructed a ranked list of genes according to the minimum of $P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma})$ and $P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma})$. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
 
-I will use the term ebayes to refer to the approach defined in Sections 2.1 - 2.2 and I am assuming normal distribution for half-variety differences.
+We will use the term {\tt eBayes} to refer to the approach defined in Sections 2.1 - 2.2 and we are assuming normal distribution for half-variety differences.
 
 \section{Alternative Methods}
 
