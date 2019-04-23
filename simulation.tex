@@ -109,7 +109,9 @@ sc & nGenes & nSamples & pDiff(\%) \\
 \end{table}
 
 
-Given the parameters gene-specific parameter estimates $\mu_{gi}, \phi_g$, 
+We set up a simulation framework with parameters based on the joint distribution of mean $\mu_{gi}$ and gene-wise dispersion estimates $\phi_g$ from the maize RNA-seq data \citep{paschold2012complementation}.
+
+We generated true NB model parameters, $\mu_{gi}$ and $\phi_g$, using the joint distribution of estimates $\hat{\mu}_{gi}$ and $\hat{\phi}_g$, estimated using {\tt edgeR}
 
 
 For a particular gene, the truth was determined via the proportion of differential gene expression (pDiff) in the scenario setup. I randomly selected $nGenes \times (1-pDiff)$ genes and assign the expected variety count means the same as $\mu_{g1} = \mu_{g2} = 1/(n_1+n_2)\times \sum_{i=1}^2 \sum_{j=1}^{n_i} Y_{gij}$ for the selected non-DE genes. 
