@@ -111,10 +111,14 @@ sc & nGenes & nSamples & pDiff(\%) \\
 
 We set up a simulation framework with parameters based on the joint distribution of mean $\mu_{gi}$ and gene-wise dispersion estimates $\phi_g$ from the maize RNA-seq data \citep{paschold2012complementation}.
 
-We generated true NB model parameters, $\mu_{gi}$ and $\phi_g$, using the joint distribution of estimates $\hat{\mu}_{gi}$ and $\hat{\phi}_g$, estimated using {\tt edgeR}
+We generated true NB model parameters, $\mu_{gi}$ and $\phi_g$, using the joint distribution of estimates $\hat{\mu}_{gi}$ and $\hat{\phi}_g$, estimated using {\tt edgeR} from the real dataset \citep{paschold2012complementation}. The derived from real data parameters were used to simulate the counts, from a NB distribution. 
 
 
-For a particular gene, the truth was determined via the proportion of differential gene expression (pDiff) in the scenario setup. I randomly selected $nGenes \times (1-pDiff)$ genes and assign the expected variety count means the same as $\mu_{g1} = \mu_{g2} = 1/(n_1+n_2)\times \sum_{i=1}^2 \sum_{j=1}^{n_i} Y_{gij}$ for the selected non-DE genes. 
+For a particular gene in the simulated dataset, the number of true DE tag was determined via the proportion of differential gene expression (pDiff) in the simulation scenario setup. I randomly selected $nGenes \times (1-pDiff)$ genes and assign the expected variety count means the same as $\mu_{g1} = \mu_{g2} = 1/(nSample)\sum_{j=1}^{nRep} \left[ N_{1j}\exp{LCF_{g,1}}+ N_{2j}\exp{LCF_{g,2}} \right]$ for the selected non-DE genes, where $LCF_{g,i}, i=1,2$ was the log of change of fold estimates got from the parameter estmation based on the real RNA-seq dataset.
+
+We simulated $nGenes$ total number of genes with $nSample$ number of samples, among which $pDiff$ percent of them are true DE genes. For each scenario, we simulated 5 such datasets with different seeds.
+
+
 
 
 
