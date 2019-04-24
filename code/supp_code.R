@@ -907,12 +907,16 @@ sp <- ggplot(auc_table,
   geom_point(aes(shape=genes, color=genes)) + 
   scale_shape_manual(values=c(1,8))+
   scale_color_manual(values=c("red", "blue"))+
-  xlab("Method")+ylab("AUC Value")+theme(axis.text.x=element_text(angle=90, hjust=1))
+  xlab("Method")+ylab("AUC Value")+theme(axis.text.x=element_text(angle=90, hjust=1),
+                                         text=element_text(size = 20))
 
 sp
 
 # Divide by levels of "nSample", in the vertical direction
-sp + facet_grid(ord_sample_fac ~ pdiff_fac)
+sp + 
+  facet_grid(ord_sample_fac ~ pdiff_fac)+
+  theme(strip.text.x = element_text(size = 18),
+        strip.text.y = element_text(size = 18))
 
 
 

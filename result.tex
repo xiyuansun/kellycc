@@ -12,30 +12,28 @@ To evaluate the true positive rate (TPR) and false positive rate (FPR) together,
 \label{sc1_roc_01}
 \end{figure}
 
-The most optimal ROC curve jointly displays high levels of TPR and FPR. {\tt DESeq2} and {\tt eBayes} performed equallly better than other methods when sample size is large, i.e. $nSample = 8, 16$. When we have few samples, i.e., $nSample=4$, {\tt eBayes} outperforms all other methods. 
+The most optimal ROC curve jointly displays high levels of TPR and FPR. {\tt DESeq2} and {\tt eBayes} performed equally better than other methods when sample size is large, i.e. $nSample = 8, 16$. When we have few samples, i.e., $nSample=4$, {\tt eBayes} outperforms all other methods. {\tt eBayes} provides the best true positive rate for a given false positive rate in most cases. 
 
-We also evaluated the different methods with another performance metric: area under the curve (AUC) of ROC curves. Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in \ref{tab:Scenario}. We facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. 
+We also evaluated the different methods with another performance metric: area under the curve (AUC) of ROC curves. Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in \ref{tab:Scenario}. We facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. Similar to the single ROC curve, the eBayes method appears to outperform the other methods in terms of AUC, when number of samples and true DE proportion are small. With four or eight replcates per variety, there does not appear to be much of a difference between {\tt eBayes} and {\tt DESeq2}, but as the number of replicates decreases, the {\tt eBayes} approach appears to improve relative to {\tt DESeq2}.
 
 \begin{figure}[h!tb] 
-\includegraphics[height=10cm,width=18cm]{auc_plot}
-\caption{AUC Plot of Simulated Datasets across Six Methods, Facetted by proportion of DE (pDiff) and number of samples (nSample), Colored by total number of Genes (nGenes)}
+\includegraphics[height=20cm,width=18cm]{auc_plot}
+\caption{AUC Plot of Simulated Datasets across Six Methods, Facetted by proportion of DE (pDiff) and number of samples (nSample), Grouped by total number of Genes (nGenes)}
 \label{auc}
 \end{figure}
 
-We noticed that the difference among methods shrank as proportion of DE genes $pDiff$ increases. The number of genes doesn't affect the methods performance in terms of AUC values. All methods perform better when the number of samples increases. 
+We noticed that the difference among methods shrank as proportion of DE genes (pDiff) increases. The number of genes (nGenes) doesn't affect the methods performance in terms of AUC values. All methods perform better when the number of samples increases.
 
 
 \section{Discussion}
 
-We evaluated
+{\tt eBayes} method is based on obtaining estimate for hyperparameters followed by MCMC to estimate gene-specific parameters. The empirical Bayes posteriors can be used to estimate posterior probabilities of DE . Through a simulation study, we demonstrated that this method outperformed alternative methods. 
 
-Try to explain the results
+Number of samples (nSamples) shows an impact on methods' performance in terms of AUC values. More samples (nSamples) would improve all methods' performance given the same proportion of DE genes (pDiff). DE analysis methods work better on count data with more replicates per condition and higher true DE genes proportion. This is not surprising considering that the focus of most methods is to model the variability in gene expression measurements and therefore increasing the number of replicates strengthen the estimate. 
 
-Limitations of this study
+The true DE genes proportion (pDiff) affects the outperformance of {\tt eBayes}. When pDiff is smaller, {\tt eBayes} performs much better than other methods in terms of AUC values, which means eBayes method has more advantages handling smaller true DE proportion scenario.
 
-Future direction
-
-
+{\tt eBayes} method might be improved by refining the hierarchical model for the gene-specific parameter distribution and the hyperparameters estimation. There are other methods to explore, such as fully Bayesian methods. 
 
 
 
