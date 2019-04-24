@@ -6,21 +6,18 @@ For the methods in Chapter 2, we sorted genes according to the computed measure 
 
 To evaluate the true positive rate (TPR) and false positive rate (FPR) together, we generated receiver operator characteristic (ROC) curves based on the DE analysis results of the simulated datasets in each simulation scenario. Figure \ref{sc1_roc_01} is an example of the ROC curves we generated based on scenario 1 simulation 1 dataset. More scenario simulation ROC curves are in the Appendix. 
 
-\begin{figure}[h!tb] 
-\includegraphics[height=10cm,width=15cm]{sc1_sim1_roc}
-\caption{ROC curves of Simulated Datasets with $nGenes=10000, nSamples=8, pDiff=10\%$}
-\label{sc1_roc_01}
-\end{figure}
-
 The most optimal ROC curve jointly displays high levels of TPR and FPR. {\tt DESeq2} and {\tt eBayes} performed equally better than other methods when sample size is large, i.e. $nSample = 8, 16$. When we have few samples, i.e., $nSample=4$, {\tt eBayes} outperforms all other methods. {\tt eBayes} provides the best true positive rate for a given false positive rate in most cases. 
 
-We also evaluated the different methods with another performance metric: area under the curve (AUC) of ROC curves. Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in \ref{tab:Scenario}. We facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. Similar to the single ROC curve, the eBayes method appears to outperform the other methods in terms of AUC, when number of samples and true DE proportion are small. With four or eight replcates per variety, there does not appear to be much of a difference between {\tt eBayes} and {\tt DESeq2}, but as the number of replicates decreases, the {\tt eBayes} approach appears to improve relative to {\tt DESeq2}.
-
 \begin{figure}[h!tb] 
-\includegraphics[height=20cm,width=18cm]{auc_plot}
+\includegraphics[height=10cm,width=15cm]{auc_plot}
 \caption{AUC Plot of Simulated Datasets across Six Methods, Facetted by proportion of DE (pDiff) and number of samples (nSample), Grouped by total number of Genes (nGenes)}
 \label{auc}
 \end{figure}
+
+
+We also evaluated the different methods with another performance metric: area under the curve (AUC) of ROC curves. Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in \ref{tab:Scenario}. We facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. Similar to the single ROC curve, the eBayes method appears to outperform the other methods in terms of AUC, when number of samples and true DE proportion are small. With four or eight replcates per variety, there does not appear to be much of a difference between {\tt eBayes} and {\tt DESeq2}, but as the number of replicates decreases, the {\tt eBayes} approach appears to improve relative to {\tt DESeq2}.
+
+
 
 We noticed that the difference among methods shrank as proportion of DE genes (pDiff) increases. The number of genes (nGenes) doesn't affect the methods performance in terms of AUC values. All methods perform better when the number of samples increases.
 
@@ -38,6 +35,14 @@ The true DE genes proportion (pDiff) affects the outperformance of {\tt eBayes}.
 
 
 \section{Appendix}
+
+\begin{figure}[h!tb] 
+\includegraphics[height=10cm,width=15cm]{sc1_sim1_roc}
+\caption{ROC curves of Simulated Datasets with $nGenes=10000, nSamples=8, pDiff=10\%$}
+\label{sc1_roc_01}
+\end{figure}
+
+
 
 \begin{figure}[h!tb] 
 \includegraphics[height=10cm,width=15cm]{sc2_sim1_roc}
