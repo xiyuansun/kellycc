@@ -6,7 +6,7 @@ We built a simulation framework that aims to reflect the reality of RNA-seq data
 
 \subsection{Parameter Estimation}
 
-To assess the efficacy of eBayes method to identify DE genes, we used a maize dataset with varieties $B73$ and $Mo17$ \citep{paschold2012complementation} to determine realistic parameter values for our simulation study. Chapter 2 describes the maize dataset in detail. 
+To assess the efficacy of \texttt{eBayes} method to identify DE genes, we used a maize dataset with varieties $B73$ and $Mo17$ \citep{paschold2012complementation} to determine realistic parameter values for our simulation study. Chapter 2 describes the maize dataset in detail. 
 
 We removed the genes with zero counts in all conditions, as well as genes whose maximum counts are less than $5$ as recommended \citep{rau2013data}.The description of parameters for the real RNA-seq dataset is summarized in Table \ref{tab:Parameter-Estimation}. 
 
@@ -41,25 +41,13 @@ In summary, the library size (reads mapped to the transcriptome) is $\log{10}$ m
 
 \subsection{Model}
 
-In our simulated data, we used a generalized linear model (GLM) with negative binomial distribution. For the dataset of two groups, the counts for a particular gene $g$ in group $i$ replicate $j$ were modeled by equation \ref{eq:1}:
-
-\begin{equation}
-\label{eq:1}
-Y_{gij} \stackrel{ind}{\sim} NB(mean = \mu_{gi}, var = \mu_{gi}(1+\mu_{gi}\phi_{g}))
-\end{equation}
-where $\phi_g$ is the genewise dispersion calculated by the CR-APL method, and the expected value $\mu_{gi}$ sis a function of the library size of group $i$ replicate $j$ as equation \ref{eq:2}:
-
-\begin{equation}
-\label{eq:2}
-\log_e \mu_{gi} = x_{gi}^T \beta_g + \log_e N_{ij}
-\end{equation}
-Here $\mu_{gi}$ is the expected counts of gene $g$ in group $i$, $N_{ij}$ is the normalized library size for group $i$ replicate $j$, $\beta_g$ is the vector of coefficients for the two experimental conditions (two groups), $x_{gi}$ is a vector of length $2$ indicating whether group $i$ replicate $j$ belongs to group one or group two in the experiment. The LFC was determined by the difference of the two elements of $\beta_g$. 
+In our simulated data, we used a generalized linear model (GLM) with negative binomial distribution. For the dataset of two groups, the counts for a particular gene $g$ in group $i$ replicate $j$ were modeled by Equation \eqref{eq:1}, where $\phi_g$ is the genewise dispersion calculated by the CR-APL method, and the expected value $\mu_{gi}$ is a function of the library size of group $i$ replicate $j$ as Equation \ref{eq:2}, where $\mu_{gi}$ is the expected counts of gene $g$ in group $i$, $N_{ij}$ is the normalized library size for group $i$ replicate $j$, $\beta_g$ is the vector of coefficients for the two experimental conditions (two groups), $x_{gi}$ is a vector of length $2$ indicating whether group $i$ replicate $j$ belongs to group one or group two in the experiment. The LFC was determined by the difference of the two elements of $\beta_g$. 
 
 
 
 \subsection{Simulation Scenario}
 
-To evaluate the performance of eBayes method and the alternative methods across a variety of reasonable scenarios, we created several options to make up each scenario. We set up the simulation scenarios as the following table \ref{tab:Scenario}:
+To evaluate the performance of \texttt{eBayes} method and the alternative methods across a variety of reasonable scenarios, we created several options to make up each scenario. We set up the simulation scenarios as the following Table \ref{tab:Scenario}:
 
 \begin{table}[H]
 \centering
