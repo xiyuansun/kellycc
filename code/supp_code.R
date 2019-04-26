@@ -955,6 +955,16 @@ sc5_sim3_auc <- plot_roc_all(all_result=sc5_sim3_pvals, name="Scenario5 Simulate
 sc5_sim4_auc <- plot_roc_all(all_result=sc5_sim4_pvals, name="Scenario5 Simulated Data 4")
 sc5_sim5_auc <- plot_roc_all(all_result=sc5_sim5_pvals, name="Scenario5 Simulated Data 5")
 
+sc6_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_1_pval.rds")
+sc6_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_2_pval.rds")
+sc6_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_3_pval.rds")
+sc6_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_4_pval.rds")
+sc6_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_5_pval.rds")
+sc6_sim1_auc <- plot_roc_all(all_result=sc6_sim1_pvals, name="Scenario6 Simulated Data 1")
+sc6_sim2_auc <- plot_roc_all(all_result=sc6_sim2_pvals, name="Scenario6 Simulated Data 2")
+sc6_sim3_auc <- plot_roc_all(all_result=sc6_sim3_pvals, name="Scenario6 Simulated Data 3")
+sc6_sim4_auc <- plot_roc_all(all_result=sc6_sim4_pvals, name="Scenario6 Simulated Data 4")
+sc6_sim5_auc <- plot_roc_all(all_result=sc6_sim5_pvals, name="Scenario6 Simulated Data 5")
 
 
 
