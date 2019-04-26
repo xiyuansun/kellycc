@@ -4,6 +4,15 @@
 
 To detemine whether the read count differences between different conditions for a given gene are greater than expected by chance, differential gene expression (DGE) tools must find a way to estimate that difference \citep{dundar2015introduction}.The two basic tasks of all DGE tools are: (1) Estimate the magnitude of differential expression between two or more conditions based on read counts from replicated samples, i.e., calculate the fold change of read counts, taking into account the differences in sequencing depth and variability; (2) Estimate the significance of the difference and correct for multiple testing. 
 
+\section{Standard Setup of Negative Binomial Model in Generalized Linear Model Framework}
+
+To most easily explain the following DE analysis methods, we followed closedly the notation used in McCarthy et al.'s paper\citep{mccarthy2012differential}.
+
+Let the $Y_{gij}$ be the read cound in replicate $j$ of condition $i$ for gene $g$. Assume $y_{gij}$ follows a NB distribution with mean $\mu_{gij}$ and gene-wise dispersion $\phi_g$, denoted by $Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gij}, \phi_g)$. Gene $g$'s varince equals $\mu_{gij}(1+\phi_g \cdot \mu_{gij})$, while the dispersion $\phi_g$ is the square of the biological coefficient of variation \citep{mccarthy2012differential}. 
+
+In the generalized linear model (GLM) setting, the mean response, $\mu_{gij}$, is linked to a  linear predictor with the natural logorithm link according to $\log(\mu_{gij}) = \mathbf{X\beta_g} + \log(N_{ij})$, where $\mathbf{X}$ is the design matrix containing the covariates (e.g., experimental conditions, batch effects, etc.), $\mathbf{\beta_g}$ is a vector of regression parameters (a subset of which are of interest for differential expression inference) and $N_{ij}$ is the normalized library size for replicate $j$ of condition $i$. Different DE analysis methods adopted different algorithms to estimate the regression parameters and gene-wise dispersion parameters. More detials could be checked in the Alternative Methods section. 
+
+
 \section{Empirical Bayes identification of gene differential expression from RNA-seq read counts}
 
 
