@@ -1091,6 +1091,16 @@ sc17_sim3_auc <- plot_roc_all(all_result=sc17_sim3_pvals, name="Scenario17 Simul
 sc17_sim4_auc <- plot_roc_all(all_result=sc17_sim4_pvals, name="Scenario17 Simulated Data 4")
 sc17_sim5_auc <- plot_roc_all(all_result=sc17_sim5_pvals, name="Scenario17 Simulated Data 5")
 
+sc18_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_1_pval.rds")
+sc18_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_2_pval.rds")
+sc18_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_3_pval.rds")
+sc18_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_4_pval.rds")
+sc18_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_5_pval.rds")
+sc18_sim1_auc <- plot_roc_all(all_result=sc18_sim1_pvals, name="Scenario18 Simulated Data 1")
+sc18_sim2_auc <- plot_roc_all(all_result=sc18_sim2_pvals, name="Scenario18 Simulated Data 2")
+sc18_sim3_auc <- plot_roc_all(all_result=sc18_sim3_pvals, name="Scenario18 Simulated Data 3")
+sc18_sim4_auc <- plot_roc_all(all_result=sc18_sim4_pvals, name="Scenario18 Simulated Data 4")
+sc18_sim5_auc <- plot_roc_all(all_result=sc18_sim5_pvals, name="Scenario18 Simulated Data 5")
 
 
 #generate the AUC plot facetted by nSample pDiff, colored by nGenes
