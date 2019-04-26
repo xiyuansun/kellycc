@@ -1139,12 +1139,6 @@ sc18_sim3_auc <- plot_roc_all(all_result=sc18_sim3_pvals, name="Scenario18 Simul
 sc18_sim4_auc <- plot_roc_all(all_result=sc18_sim4_pvals, name="Scenario18 Simulated Data 4")
 sc18_sim5_auc <- plot_roc_all(all_result=sc18_sim5_pvals, name="Scenario18 Simulated Data 5")
 
-
-
-
-
-
-
 #generate the AUC plot facetted by nSample pDiff, colored by nGenes
 
 setwd("~/Desktop/kellycc/code/sim")
