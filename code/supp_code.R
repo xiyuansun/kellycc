@@ -1034,6 +1034,20 @@ sc12_sim3_auc <- plot_roc_all(all_result=sc12_sim3_pvals, name="Scenario12 Simul
 sc12_sim4_auc <- plot_roc_all(all_result=sc12_sim4_pvals, name="Scenario12 Simulated Data 4")
 sc12_sim5_auc <- plot_roc_all(all_result=sc12_sim5_pvals, name="Scenario12 Simulated Data 5")
 
+
+sc13_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_1_pval.rds")
+sc13_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_2_pval.rds")
+sc13_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_3_pval.rds")
+sc13_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_4_pval.rds")
+sc13_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_5_pval.rds")
+sc13_sim1_auc <- plot_roc_all(all_result=sc13_sim1_pvals, name="Scenario13 Simulated Data 1")
+sc13_sim2_auc <- plot_roc_all(all_result=sc13_sim2_pvals, name="Scenario13 Simulated Data 2")
+sc13_sim3_auc <- plot_roc_all(all_result=sc13_sim3_pvals, name="Scenario13 Simulated Data 3")
+sc13_sim4_auc <- plot_roc_all(all_result=sc13_sim4_pvals, name="Scenario13 Simulated Data 4")
+sc13_sim5_auc <- plot_roc_all(all_result=sc13_sim5_pvals, name="Scenario13 Simulated Data 5")
+
+
+
 #generate the AUC plot facetted by nSample pDiff, colored by nGenes
 
 setwd("~/Desktop/kellycc/code/sim")
