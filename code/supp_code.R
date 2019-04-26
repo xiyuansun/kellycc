@@ -828,6 +828,85 @@ saveRDS(sc18_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep,
                                 ".rds"))
 
 
+# re-run the ROC curve
+
+plot_roc_all <- function(all_result, name){
+  sim_result_tb <- all_result
+  
+  sim_ds2_pred <- prediction(sim_result_tb$ds2_padj,sim_result_tb$true_de, label.ordering = c(1,0))
+  sim_ds2_perf <- performance(sim_ds2_pred, "tpr","fpr")
+  sim_ds2_auc <- performance(sim_ds2_pred, "auc")@y.values[[1]]
+  
+  sim_ds_pred <- prediction(sim_result_tb$ds_padj,sim_result_tb$true_de, label.ordering = c(1,0))
+  sim_ds_perf <- performance(sim_ds_pred, "tpr","fpr")
+  sim_ds_auc <- performance(sim_ds_pred, "auc")@y.values[[1]]
+  
+  sim_er_pred <- prediction(sim_result_tb$er_padj,sim_result_tb$true_de, label.ordering = c(1,0))
+  sim_er_perf <- performance(sim_er_pred, "tpr","fpr")
+  sim_er_auc <- performance(sim_er_pred, "auc")@y.values[[1]]
+  
+  sim_ss_pred <- prediction(sim_result_tb$ss_padj,sim_result_tb$true_de, label.ordering = c(1,0))
+  sim_ss_perf <- performance(sim_ss_pred, "tpr","fpr")
+  sim_ss_auc <- performance(sim_ss_pred, "auc")@y.values[[1]]
+  
+  
+  sim_eb_pred <- prediction(sim_result_tb$eb_padj,sim_result_tb$true_de, label.ordering = c(1,0))
+  sim_eb_perf <- performance(sim_eb_pred, "tpr","fpr")
+  sim_eb_auc <- performance(sim_eb_pred, "auc")@y.values[[1]]
+  
+  
+  sim_ebayes_pred <- prediction(sim_result_tb$ebayes_pval,sim_result_tb$true_de, label.ordering = c(1,0))
+  sim_ebayes_perf <- performance(sim_ebayes_pred, "tpr","fpr")
+  sim_ebayes_auc <- performance(sim_ebayes_pred, "auc")@y.values[[1]]
+  
+  library(ROCR)
+  
+  plot(sim_ds2_perf, col="blue", main=paste(name,"ROC curves",sep=" "))
+  plot(sim_ds_perf, col="orange", add=TRUE)
+  plot(sim_er_perf, col="red", add=TRUE)
+  plot(sim_ss_perf, col="green",add=TRUE)
+  plot(sim_eb_perf, col="brown",add=TRUE)
+  plot(sim_ebayes_perf, col="black", add=TRUE)
+  
+  text <- c(paste("DESeq2 AUC",round(sim_ds2_auc, digits = 2), sep = "="), 
+            paste("DESeq AUC",round(sim_ds_auc, digits = 2), sep = "="),
+            paste("edgeR AUC",round(sim_er_auc, digits = 2), sep = "="),
+            paste("sSeq AUC",round(sim_ss_auc, digits = 2), sep = "="),
+            paste("EBSeq AUC",round(sim_eb_auc, digits = 2), sep = "="),
+            paste("eBayes AUC", round(sim_ebayes_auc, digits = 2), sep="="))
+  col = c("blue","orange","red","green","brown","black")
+  lty <- c(1,1,1,1,1,1)
+  legend("bottomright",text,text.col=col ,lwd = 1,lty=lty,col= col)
+  
+  auc_result <- matrix(nrow=1, ncol=6)
+  auc_result[1,1]<- sim_ds2_auc
+  auc_result[1,2] <- sim_ds_auc
+  auc_result[1,3] <- sim_er_auc
+  auc_result[1,4] <- sim_ss_auc
+  auc_result[1,5] <- sim_eb_auc
+  auc_result[1,6] <- sim_ebayes_auc
+  colnames(auc_result) <- c("ds2_auc", "ds_auc", "er_auc",
+                            "ss_auc", "eb_auc", "ebayes_auc")
+  
+  return(auc_result)
+}
+
+
+
+
+
+sc1_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
+sc1_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_2_pval.rds")
+sc1_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_3_pval.rds")
+sc1_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_4_pval.rds")
+sc1_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_5_pval.rds")
+sc1_sim1_auc <- plot_roc_all(all_result=sc1_sim1_pvals, name="Scenario1 Simulated Data 1")
+sc1_sim2_auc <- plot_roc_all(all_result=sc1_sim2_pvals, name="Scenario1 Simulated Data 2")
+sc1_sim3_auc <- plot_roc_all(all_result=sc1_sim3_pvals, name="Scenario1 Simulated Data 3")
+sc1_sim4_auc <- plot_roc_all(all_result=sc1_sim4_pvals, name="Scenario1 Simulated Data 4")
+sc1_sim5_auc <- plot_roc_all(all_result=sc1_sim5_pvals, name="Scenario1 Simulated Data 5")
+
+
 #generate the AUC plot facetted by nSample pDiff, colored by nGenes
 
 setwd("~/Desktop/kellycc/code/sim")
