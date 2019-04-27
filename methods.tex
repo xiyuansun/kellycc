@@ -8,9 +8,31 @@ To detemine whether the read count differences between different conditions for 
 
 To most easily explain the following DE analysis methods, we followed closedly the notation used in McCarthy et al.'s paper\citep{mccarthy2012differential}.
 
-Let the $Y_{gij}$ be the read cound in replicate $j$ of condition $i$ for gene $g$. Assume $y_{gij}$ follows a NB distribution with mean $\mu_{gij}$ and gene-wise dispersion $\phi_g$, denoted by $Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gij}, \phi_g)$. Gene $g$'s varince equals $\mu_{gij}(1+\phi_g \cdot \mu_{gij})$, while the dispersion $\phi_g$ is the square of the biological coefficient of variation \citep{mccarthy2012differential}. 
+Let the $Y_{gij}$ be the read cound in replicate $j$ of condition $i$ for gene $g$. Assume $y_{gij}$ follows a NB distribution with mean $\mu_{gij}$ and gene-wise dispersion $\phi_g$, denoted by Equation \eqref{eq:1}
+\begin{equation}
+\label{eq:1}
+Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gij}, \phi_g)
+\end{equation}
 
-In the generalized linear model (GLM) setting, the mean response, $\mu_{gij}$, is linked to a  linear predictor with the natural logorithm link according to $\log(\mu_{gij}) = \mathbf{X\beta_g} + \log(N_{ij})$, where $\mathbf{X}$ is the design matrix containing the covariates (e.g., experimental conditions, batch effects, etc.), $\mathbf{\beta_g}$ is a vector of regression parameters (a subset of which are of interest for differential expression inference) and $N_{ij}$ is the normalized library size for replicate $j$ of condition $i$. Different DE analysis methods adopted different algorithms to estimate the regression parameters and gene-wise dispersion parameters. More detials could be checked in the Alternative Methods section. 
+Gene $g$'s varince equals $\mu_{gij}(1+\phi_g \cdot \mu_{gij})$, while the dispersion $\phi_g$ is the square of the biological coefficient of variation \citep{mccarthy2012differential}. 
+
+In the generalized linear model (GLM) setting, the mean response, $\mu_{gij}$, is linked to a  linear predictor with the natural logorithm link according to Equation \eqref{eq:2}
+\begin{equation}
+\label{eq:2}
+\log(\mu_{gij}) = x_{i}^T\beta_g + \log(N_{ij})
+\end{equation}
+where $x_{i}$ is the design matrix containing the covariates (e.g., experimental conditions, batch effects, etc.), $\mathbf{\beta_g}$ is a vector of regression parameters (a subset of which are of interest for differential expression inference) and $N_{ij}$ is the normalized library size for replicate $j$ of condition $i$. In the Empirical Bayes Method Part, we denote the terms of primary scientific interest as Equation \eqref{eq:3}
+\begin{equation}
+\label{eq:3}
+\lambda_{gi} = x_i ^T \beta_g
+\end{equation}
+and the noamalization factors as Equation \eqref{eq:4}
+\begin{equation}
+\label{eq:4}
+\gamma_{ij} = \log(N_{ij})
+\end{equation}
+
+Different DE analysis methods adopted different algorithms to estimate the regression parameters and gene-wise dispersion parameters. More detials could be checked in the Alternative Methods section. 
 
 
 \section{Empirical Bayes identification of gene differential expression from RNA-seq read counts}
@@ -22,51 +44,55 @@ To use RNA-seq counts to identify genes displaing differential expression (DE), 
 
 Let $Y_{gij}$ be the count for gene $g=1,2,..., G$, variety $i=1,2$, and replicate $j=1,2,3,...,n_i$.
 
-We assume
+We assume $Y_{gij}$ follows Equation \eqref{eq:1} with a different parameterization as $\mu_{gij} = \exp(x_i^T \beta_g + \log(N_{ij}),\lambda_{gi} = x_i^T \beta_g, \gamma_{ij} =\log(N_{ij}), \phi_g = \exp(\psi_g)$, and $\log(N_{ij})$ are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
 
-\begin{equation}
-\label{eq:1}
-Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gi}, \phi_g)
-\end{equation}
-
-Mapped to the notation system Niemi used in their paper\citep{niemi2015empirical}, we have the link functions as equation \ref{eq:2}
-\begin{equation}
-\label{eq:2}
-\log(\mu_{gij}) = \lambda_{gi} + \gamma_{ij} = x_i^T \beta_g + \log_e (N_{ij})
-\end{equation}
-and dispersion $\phi_g = \exp{(\psi_g)}$, where $\gamma_{ij}$ terms are normalization factors that account for differencees in the thoroughness of sequencing from sample to sample. 
-
-Following \citep{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\beta_{g1}$ and half-variety difference $\beta_{g2}$. For our differential expression study where number of varieties is 2, let $i=1,2$ indicate the two varieties. The reparameterization is
-
-\begin{equation}
-\label{eq:3}
-\beta_{g1} = \frac{\mu_{g1}+\mu_{g2}}{2}, \beta_{g2} = \frac{\mu_{g1}-\mu_{g2}}{2}
-\end{equation}
-
-We assume a hierarchical model for the gene-specific mean parameters and overdispersion parameters. Initially, we assume the variety averages, half-variety averages, and overdispersion parameters follow normal distributions
-
-\begin{equation}
-\label{eq:4}
-\beta_{g1} \stackrel{ind}{\sim} N(\eta_{\beta_1}, \sigma^2_{\beta_1}), \beta_{g2} \stackrel{ind}{\sim} N(\eta_{\beta_2} , \sigma^2_{\beta_2}), \psi_g \stackrel{ind}{\sim} N(\eta_\psi, \sigma^2_\psi)
-\end{equation}
-
-
-\subsection{Empirical Bayes Method (eBayes)}
-
-We categorized the parameters of the model into gene-specific parameters $\theta = (\theta_1, ..., \theta_G)$ where $\theta_g = (\beta_{g1}, \beta_{g2}, \psi_g)$, normalization factors $\gamma = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\pi = (\eta, \sigma)$ where $\eta = (\eta_{\beta_1}, \eta_{\beta_2}, \eta_\psi)$ and $\sigma = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$. We obtained estimates for the hyperparameters and then based gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
-
-To obtain normalization factors $\hat{\gamma}$, we used the weighted trimmed mean of $M$ values (TMM). We used {\tt edgeR} to obtain genewise dispersion estimates, $\hat{\psi}_g$, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\beta}_{g1}, \hat{\beta}_{g2}$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\beta}_{g1} , \hat{\beta}_{g2}, \hat{\psi}_g)$, I estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach. 
-
-Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, I perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:5} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
+Following \citep{ji2014estimation}, we reparameterize the gene-variety mean structure into the genespecific average $\beta_{g1}$ and half-variety difference $\beta_{g2}$ as shown in Equation \eqref{eq:5}. For our differential expression study where number of varieties is 2, let $i=1,2$ indicate the two varieties. The reparameterization is
 
 \begin{equation}
 \label{eq:5}
+\beta_{g1} = \frac{\lambda_{g1}+\lambda_{g2}}{2}, \beta_{g2} = \frac{\lambda_{g1}-\lambda_{g2}}{2}
+\end{equation}
+
+We assume a hierarchical model for the gene-specific mean parameters and overdispersion parameters with the variety averages, half-variety averages, and overdispersion parameters follow normal distributions as in Equation \eqref{eq:6}
+
+\begin{equation}
+\label{eq:6}
+\beta_{g1} \stackrel{ind}{\sim} N(\eta_{\beta_1}, \sigma^2_{\beta_1}), \beta_{g2} \stackrel{ind}{\sim} N(\eta_{\beta_2} , \sigma^2_{\beta_2}), \psi_g \stackrel{ind}{\sim} N(\eta_\psi, \sigma^2_\psi)
+\end{equation}
+We assume a priori independence among the variety averages, half-variety averages, and overdispersion parameters.
+
+
+\subsection{Empirical Bayes Method}
+
+We categorized the parameters of the model in Section 2.2.1 into gene-specific parameters $\mathbf{\theta} = (\mathbf{\theta_1}, ..., \mathbf{\theta_G)}$ where $\mathbf{\theta_g} = (\beta_{g1}, \beta_{g2}, \psi_g)$, normalization factors $\mathbf{\gamma} = (\gamma_{11}, ..., \gamma_{V n_V})$, and hyperparameters $\mathbf{\pi} = (\eta, \sigma)$ where $\mathbf{\eta} = (\eta_{\beta_1}, \eta_{\beta_2}, \eta_\psi)$ and $\mathbf{\sigma} = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$. We obtained estimates for the hyperparameters and then based gene-specific inference on the posterior conditional on these estimates \citep{niemi2015empirical}.
+
+To obtain normalization factors $\hat{\gamma}$, we followed Niemi et al's approch \citep{niemi2015empirical} using the weighted trimmed mean of $M$ values (TMM)\citep{robinson2010scaling}. We used {\tt edgeR} to obtain genewise dispersion estimates, $\hat{\psi}_g$, through the adjusted profile likelihood (APL) introduced byCox and Reid \citep{cox1987parameter}, and the generalized linear model methods to obtain estimates for the remaining gene-specific parameters ($\hat{\beta}_{g1}, \hat{\beta}_{g2}$)\citep{robinson2010scaling}. Using $\hat{\theta}_g = (\hat{\beta}_{g1} , \hat{\beta}_{g2}, \hat{\psi}_g)$, I estimate hyperparameters for the location and scale parameters in the hierarchical model using a central method of moments approach, shown in Equation \eqref{eq:7} and Equation \eqref{eq:8}. For $\hat{\eta}_{\psi}, \hat{\sigma}_{\psi}$, the formula is similar to Equation \eqref{eq:7}.
+
+\begin{equation}
+\label{eq:7}
+\hat{\eta}_{\beta_1} = \sum_{g=1}^{G} \hat{\beta}_{g1}/G, 
+\hat{\sigma}^2_{\beta_1} = \sum_{g=1}^{G} (\hat{\beta}_{g1} - \hat{\eta}_{\beta_1})^2/(G-1)
+\end{equation}
+
+
+\begin{equation}
+\label{eq:8}
+\hat{\eta}_{\beta_2} = \sum_{g=1}^{G} \hat{\beta}_{g2}/G, 
+\hat{\sigma}^2_{\beta_2} = \sum_{g=1}^{G} (\hat{\beta}_{g1} - \hat{\eta}_{\beta_1})^2/(G-1)
+\end{equation}
+
+Conditional on the estimated normalization factors $\hat{\gamma}$ and hyperparameters $\hat{\pi}$, we perform a Bayesian analysis to re-estimate the gene-specific parameters and describe their uncertainty \citep{niemi2015empirical}. Equation \ref{eq:9} shows that conditional on $\hat{\gamma}$ and $\hat{\pi}$, the gene-specific parameters are independent and therefore conditional posterior inference across the genes can be parallelized. 
+
+\begin{equation}
+\label{eq:9}
 \begin{split}
-& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \mu_{gij}, \phi_g) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
+& p(\theta | y, \hat{\pi}, \hat{\gamma})  \propto \\ & \prod_{g=1}^{G} \left[ \prod_{i=1}^{2} \prod_{j=1}^{n_i} NB(y_{gij} ; \hat{\mu}_{gij}=\exp(\lambda_{gi}+ \hat{\gamma}_{ij}), \phi_g=\exp(\psi_g)) N(\beta_{g1} ; \hat{\eta}_{\beta_1}, \hat{\sigma}^2_{\beta_1}) p(\beta_{g2} ; \hat{\eta}_{\beta_2}, \hat{\sigma}_{\beta_2}) N(\psi_g ; \hat{\eta}_{\psi}, \hat{\sigma}^2_{\psi})  \right]
 \end{split}
 \end{equation}
 
-To perform the conditional posterior inference on the gene-specific parameters, we used the statistical software Stan \citep{stan2014stan} executed through the RStan interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in equation \ref{eq:5}. We used the default NUTS sampler\citep{annis2017bayesian}.
+To perform the conditional posterior inference on the gene-specific parameters, we used the statistical software \texttt{Stan} \citep{stan2014stan} executed through the \texttt{RStan} interface \citep{team2016rstan}. Stan implements a Hamiltonion Monte Carlo \citep{neal2011mcmc} to obtain samples from the posterior in Equation \ref{eq:9}. We used the default NUTS sampler\citep{annis2017bayesian}.
+
+We ran four simultaneous chains with random initial starting values for 1000 burn-in (and tuning) iterations followed by another 1000 iterations retaining every fourth sample (to reduce storage space) for inference. We monitored convergence using the potential scale reduction factor and effective sample size (ESS) for all gene-wise parameters $\mathbf{\theta_g} = (\beta_{g1}, \beta_{g2}, \psi_g)$ \citep{gelman1992inference}. According to Niemi et al's approach\citep{niemi2015empirical}, we reran the chains with double the iterations for both burn-in and inference if the minimum ESS was less than 1000. We continued the restarting and doubling until we obtained minimum ESS greater than 1000 for all parameters. 
 
 
 \subsection{Gene expression differentiation}
@@ -74,25 +100,26 @@ To perform the conditional posterior inference on the gene-specific parameters, 
 In the maize context that motivates this work, we are interested in differential expression (DE). For a specific gene $g$, non-DE occurs when expected expression in the second variety is the same as the expected expression of first variety, i.e., $\mu_{g1} = \mu_{g2}$, or equivalently, $\beta_{g2}=0$.  I evaluate measurements based on empirical Bayes estimates of their posterior probabilities, e.g., 
 
 \begin{equation}
-\label{eq:6}
+\label{eq:10}
 P(DE_g | y, \hat{\pi}, \hat{\gamma}) =\min( P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}),  P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma}))
 \end{equation}
 
 $P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)} < 0)$, $P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma}) \approx \frac{1}{M} \sum_{m=1}^M I(\beta_{g2} ^ {(m)} > 0) $
 where $\beta_{g1}^{(m)}, \beta_{g2}^{(m)}$ is the $m^{th}$ MCMC sample from the empirical Bayes posterior.
 
+We do not evaluate $\beta_{g2}=0$ since we rather treat $\beta_{g2}$ as continuous. 
 
-We constructed a ranked list of genes according to the minimum of $P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma})$ and $P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma})$. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
+We based our DE tag decisions on the estimates of the posterior probabilities shown in Equation \eqref{eq:10}. We constructed a ranked list of genes according to the minimum of $P(\beta_{g2}< 0 | y, \hat{\pi}, \hat{\gamma})$ and $P(\beta_{g2}> 0 | y, \hat{\pi}, \hat{\gamma})$. Geneticists can use this list to prioritize future experiments to understand the molecular genetic mechanisms for differential expression \citep{niemi2015empirical}. 
 
-We will use the term {\tt eBayes} to refer to the approach defined in Sections 2.1 - 2.2 and we are assuming normal distribution for half-variety differences.
+We will use the term \texttt{eBayes} to refer to the approach defined in Sections 2.1 - 2.2 and we are assuming normal distribution for half-variety differences.
 
 \section{Alternative Methods}
 
-We compared the eBayes method to five alternative methods. To follow the recent progress in the RNA-Seq DE area, we selected two widely used methods, {\tt edgeR, DESeq}, and three other newly released DE analysis packages {\tt DESeq2, EBSeq, and sSeq}. For each method, we attempted to provide a measure of the strength of DE for each gene such that small values of this measure indicate support for DE. 
+We compared the \texttt{eBayes} method to five alternative methods. To follow the recent progress in the RNA-Seq DE area, we selected two widely used methods, {\tt edgeR, DESeq}, and three other newly released DE analysis packages {\tt DESeq2, EBSeq, and sSeq}. For each method, we attempted to provide a measure of the strength of DE for each gene such that small values of this measure indicate support for DE. 
 
 Several authors proposed differential expression methods based on the negative binomial distribution, motivated by observation that real RNA-Seq data sets typically exhibited greater variability than could be modeled via the Poisson distribution\citep{lorenz2014using}. 
 
-Robinson and Smyth \citep{robinson2007moderated} assumed a negative binomial distribution for the read counts for all genes with a common dispersion parameter, i.e., $Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gij},\phi)$, where $\mu_{gij}=N_{ij}\exp(\lambda_{gi})$, $N_{ij}$ is the library size for sample $j$ in population $i$, and $\exp(\lambda_{gi})$ is the relative abundance parameter for gene $g$ in population $i$, which is assumed to be the same to the replicate samples within a population. The dispersion parameter $\phi$ is estimated by maximizing the conditional likelihood given the sum of the counts in each poopulation. Quantile adjusted conditional maximum likelihood (qCML) is applied if the library sizes are not equal within each population. The null hypothesis for the test of differential expression is the equality of the relative abindance parameters, $H_0: \lambda_{g1} = \lambda_{g2}, g=1,2,...,G$. The authors suggested an exact NB test based on the same quantile adjustment used in estimating the dispersion parameter, and a p-value calculated as the probability of observing counts greater than those observed\citep{lorenz2014using}. But the assumption of dispersion parameter $\phi$ common to all genes is often implausible. The authors extended their NB approach and suggested using gene-specific dispersion parameter $\phi_g$\citep{robinson2007small}. The exact test with empirical Bayes adjustment was better at detecting DE genes and was better able to control false discovery rates when gene-specific overdispersion was introduced\citep{lorenz2014using}. So they extended the standard NB approach by estimating gene-specific dispersion parameter via empirial Bayes weighted likelihood estimation, in which gene-specific dispersion parameter estimates were shrunk toward a common dispersion. Their method was implemented in R package called {\tt edgeR}. It moderates the dispersion per gene toward a local estimate with genes of similar expression. 
+Robinson and Smyth \citep{robinson2007moderated} assumed a negative binomial distribution for the read counts for all genes with a common dispersion parameter, i.e., $Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gij},\phi)$, where $\mu_{gij}=N_{ij}\exp(\lambda_{gi})$, $N_{ij}$ is the normalized library size for sample $j$ in population $i$, and $\exp(\lambda_{gi})$ is the relative abundance parameter for gene $g$ in population $i$, which is assumed to be the same to the replicate samples within a population. The dispersion parameter $\phi$ is estimated by maximizing the conditional likelihood given the sum of the counts in each poopulation. Quantile adjusted conditional maximum likelihood (qCML) is applied if the library sizes are not equal within each population. The null hypothesis for the test of differential expression is the equality of the relative abindance parameters, $H_0: \lambda_{g1} = \lambda_{g2}, g=1,2,...,G$. The authors suggested an exact NB test based on the same quantile adjustment used in estimating the dispersion parameter, and a p-value calculated as the probability of observing counts greater than those observed\citep{lorenz2014using}. But the assumption of dispersion parameter $\phi$ common to all genes is often implausible. The authors extended their NB approach and suggested using gene-specific dispersion parameter $\phi_g$\citep{robinson2007small}. The exact test with empirical Bayes adjustment was better at detecting DE genes and was better able to control false discovery rates when gene-specific overdispersion was introduced\citep{lorenz2014using}. So they extended the standard NB approach by estimating gene-specific dispersion parameter via empirial Bayes weighted likelihood estimation, in which gene-specific dispersion parameter estimates were shrunk toward a common dispersion. Their method was implemented in R package called {\tt edgeR}. It moderates the dispersion per gene toward a local estimate with genes of similar expression. 
 
 
 Anders and Huber \citep{anders2010differential} noted that dispersion often varies with expected read count, and suggested an extended NB model in which the variances of the read count are defined a nonparametric function of their expectations, as $Y_{gij} \stackrel{ind}{\sim} NB(\mu_{gij}, \phi_\mu)$, where $\mu_{gij}=N_{ij}\exp(\lambda_{gi})$. Then $Var(Y_{gij}) = \mu_{gij}(1+\phi_\mu \mu_{gij})$. They employ a gamma-family generalized linear local regression to model the mean-dispersion relationship. The nulll hypothesis in the test of differential expression is $H_0: \lambda_{g1} = \lambda_{g2}$, which is tested by an exact test similar to Robinson and Smyth's. Their method was implemented in an R package called {\tt DESeq}. It detects and corrects dispersion estimates that are too low through modeling of the dependence of the dispersion on the average expression strength over all samples. {\tt DESeq} (by default) estimates dispersion by pooling all samples together, fitting them to a parametric distribution and taking the maximum.

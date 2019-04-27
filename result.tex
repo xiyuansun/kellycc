@@ -30,13 +30,7 @@ We also evaluated the different methods with another performance metric: area un
 We noticed that the difference among methods shrank as proportion of DE genes (pDiff) increases. The number of genes (nGenes) doesn't affect the methods performance in terms of AUC values. All methods perform better when the number of samples increases.
 
 
-\section{Discussion}
 
-\texttt{eBayes} method is based on obtaining estimate for hyperparameters followed by MCMC to estimate gene-specific parameters. The empirical Bayes posteriors can be used to estimate posterior probabilities of DE . Through a simulation study, we demonstrated that this method outperformed alternative methods in most simulation scenarios with higher AUC values. Number of samples (nSamples) shows an impact on methods' performance in terms of AUC values. More samples (nSamples) would improve all methods' performance given the same proportion of DE genes (pDiff). DE analysis methods work better on count data with more replicates per condition and higher true DE genes proportion. This is not surprising considering that the focus of most methods is to model the variability in gene expression measurements and therefore increasing the number of replicates strengthen the estimate. The true DE genes proportion (pDiff) affects the outperformance of \texttt{eBayes}. When pDiff is smaller, \texttt{eBayes} performs much better than other methods in terms of AUC values, which means eBayes method has more advantages handling smaller true DE proportion scenario.
-
-
-
-\texttt{eBayes} method might be improved by refining the hierarchical model for the gene-specific parameter distribution and the hyperparameters estimation. There are other methods to explore, such as fully Bayesian methods. 
 
 
 
