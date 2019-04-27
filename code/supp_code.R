@@ -1062,12 +1062,81 @@ plot_roc_all2 <- function(all_result, name){
 }
 
 sc1_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
-sc1_sim1_alt_pvals <- calculate_alt_pvals(sc1_sim1_data)
+sc1_sim1_all_padj <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
 sc1_sim1_ebayes_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
-sc1_sim1_all_pval <- cbind(sc1_sim1_alt_pvals, sc1_sim1_ebayes_pvals$ebayes_pval)
+sc1_sim1_all_pval <- cbind(sc1_sim1_all_padj, sc1_sim1_ebayes_pvals$ebayes_pval)
 colnames(sc1_sim1_all_pval) <- c(colnames(sc1_sim1_all_pval)[1:6], "ebayes_pval") 
-sc1_sim1_auc_result <- plot_roc_all2(all_result=sc1_sim1_all_pval, name="scenario1 sim1 data")
 
+#sc1_sim1_auc_result <- plot_roc_all2(all_result=sc1_sim1_all_pval, name="scenario1 sim1 data")
+
+# compute the power of each method
+calculate_fp<-function(simdata, padj_result){
+  er_de = as.numeric(padj_result[,"er_padj"] < 0.05)
+  ds2_de = as.numeric(padj_result[,"ds2_padj"] < 0.05)
+  ds_de =as.numeric(padj_result[,"ds_padj"] < 0.05)
+  ss_de = as.numeric(padj_result[,"ss_padj"] < 0.05)
+  eb_de = as.numeric(padj_result[,"eb_padj"] < 0.05)
+  ebayes_de = as.numeric(padj_result[,"ebayes_pval"] < 0.05)
+  true_de = simdata$true_de
+  
+  er_fp <- sum(er_de==1 & true_de==0)
+  ds_fp <- sum(ds_de==1 & true_de==0)
+  ds2_fp <- sum(ds2_de==1 & true_de==0)
+  ss_fp <- sum(ss_de==1 & true_de==0)
+  eb_fp <- sum(eb_de==1 & true_de==0)
+  ebayes_fp <- sum(ebayes_de==1 & true_de==0)
+  
+  fp_res <- as.data.frame(cbind(er_fp, ds_fp, ds2_fp, ss_fp, eb_fp, ebayes_fp))
+}
+
+calculate_tp <- function(simdata, padj_result){
+  er_de = as.numeric(padj_result[,"er_padj"] < 0.05)
+  ds2_de = as.numeric(padj_result[,"ds2_padj"] < 0.05)
+  ds_de =as.numeric(padj_result[,"ds_padj"] < 0.05)
+  ss_de = as.numeric(padj_result[,"ss_padj"] < 0.05)
+  eb_de = as.numeric(padj_result[,"eb_padj"] < 0.05)
+  ebayes_de = as.numeric(padj_result[,"ebayes_pval"] < 0.05)
+  true_de = simdata$true_de
+  
+  er_tp <- sum(er_de==1 & true_de==1)
+  ds_tp <- sum(ds_de==1 & true_de==1)
+  ds2_tp <- sum(ds2_de==1 & true_de==1)
+  ss_tp <- sum(ss_de==1 & true_de==1)
+  eb_tp <- sum(eb_de==1 & true_de==1)
+  ebayes_tp <- sum(ebayes_de==1 & true_de==1)
+  
+  tp_res <- as.data.frame(cbind(er_tp, ds_tp, ds2_tp, ss_tp, eb_tp, ebayes_tp))
+  
+}
+
+sc1_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
+sc1_sim1_all_padj <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
+sc1_sim1_ebayes_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
+sc1_sim1_all_pval <- cbind(sc1_sim1_all_padj, sc1_sim1_ebayes_pvals$ebayes_pval)
+colnames(sc1_sim1_all_pval) <- c(colnames(sc1_sim1_all_pval)[1:6], "ebayes_pval") 
+#calculate type I error
+sc1_sim1_fp <- calculate_fp(simdata = sc1_sim1_data, padj_result = sc1_sim1_all_pval)
+
+sc1_sim1_fpr_res <- sc1_sim1_fp %>% 
+  mutate(sc=1, sim=1, nGenes=10000,
+         er_fpr = er_fp/nGenes,
+         ds_fpr = ds_fp/nGenes,
+         ds2_fpr= ds2_fp/nGenes,
+         ss_fpr = ss_fp/nGenes,
+         eb_fpr = eb_fp/nGenes,
+         ebayes_fpr = ebayes_fp/nGenes)%>%
+  select(er_fpr, ds_fpr, ds2_fpr, ss_fpr, eb_fpr, ebayes_fpr)
+
+
+sc1_sim2_tp <- calculate_tp(simdata = sc1_sim1_data, padj_result = sc1_sim1_all_pval)
+
+
+sc1_sim2_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_10_2.rds")
+sc1_sim2_alt_pvals <- calculate_alt_pvals(sc1_sim2_data)
+sc1_sim2_ebayes_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_2_ebayes_pval.rds")
+sc1_sim2_all_pval <- cbind(sc1_sim2_alt_pvals, sc1_sim2_ebayes_pvals$ebayes_pval)
+colnames(sc1_sim2_all_pval) <- c(colnames(sc1_sim2_all_pval)[1:6], "ebayes_pval") 
+sc1_sim2_auc_result <- plot_roc_all2(all_result=sc1_sim2_all_pval, name="scenario1 sim2 data")
 
 
 
