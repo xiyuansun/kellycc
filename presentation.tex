@@ -1,0 +1,71 @@
+\documentclass[handout,10pt]{beamer}
+
+\usetheme{AnnArbor}
+\usecolortheme{beaver}
+
+\graphicspath{{include/}}
+
+\setlength{\unitlength}{\textwidth}  % measure in textwidths
+\usepackage[normalem]{ulem}
+
+% to avoid counting all pages
+\newcommand{\backupbegin}{
+   \newcounter{finalframe}
+   \setcounter{finalframe}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \setcounter{framenumber}{\value{finalframe}}
+}
+
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{enumerate subitem}{\alph{enumii}.}
+\setbeamertemplate{enumerate subsubitem}{\roman{enumiii}.}
+\setkeys{Gin}{width=0.6\textwidth}
+
+\newcommand{\ind}{\stackrel{ind}{\sim}}
+\providecommand{\ov}[1]{\overline{#1}}
+
+
+\institute[ISU]{Iowa State University}
+\date{\today}
+
+\title[Differential Expression Analysis Methods Comparison]{Empirical Bayesian analysis of RNAseq data for differentially expressed genes detection}
+\author{Xiyuan Sun}
+
+\usepackage{Sweave}
+\begin{document}
+\input{presentation-concordance}
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\begin{itemize}
+\item Background
+	\begin{itemize}
+	\item Differentially Expression (DE)
+	\item RNAseq data \pause
+	\end{itemize}
+\item Modeling 
+	\begin{itemize}
+	\item Null hypothesis \pause
+	\item Hierarchical overdispersed count regression model \pause
+	\end{itemize}
+\item Inference
+	\begin{itemize}
+	\item Empirical Bayes
+	\end{itemize}
+\item Simulation studies
+	\begin{itemize}
+	\item Differentially Expressed Genes detection via ROC curves \pause
+	\end{itemize}
+%\item Ongoing work
+\end{itemize}
+
+\end{frame}
+
+\end{document} 
+
+

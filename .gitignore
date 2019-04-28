@@ -15,4 +15,6 @@
 *.synctex.gz
 *.toc
 *.bbl
-thesis.pdf
+*.xlsx
+*.nav
+*.snm
