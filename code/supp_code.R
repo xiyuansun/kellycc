@@ -556,7 +556,7 @@ saveRDS(trimmed_data, "./real/data/trimmed_real_data.rds")
 #Step 3: Estimate parameters based on trimmed real data
 ###########################################################
 
-trimmed_data <- readRDS("./real/data/trimmed_real_data.rds")
+trimmed_data <- readRDS("~/Desktop/kellycc/code/real/data/trimmed_real_data.rds")
 trimmed_cond <- factor(colnames(trimmed_data))
 # DGEList object of the trimmed real data
 trimmed_object <- trimmed_data %>% DGEList()
@@ -590,6 +590,18 @@ for(i in 1:dim(trimmed_object$counts)[1]) {
 
 # updated the trimmed real data DGEList object with nofit
 trimmed_object <- trimmed_data[-nofit,]%>% DGEList()%>%calcNormFactors()
+
+trimmed_parms <- list(y=trimmed_object, fc=trimmed_fc[-nofit,], 
+                      dispsCR = trimmed_dispsCR[-nofit], 
+                      sample_data=trimmed_sample_data, 
+                      nofit=nofit)
+
+
+
+trimmed_object <- estimateCommonDisp(trimmed_object)
+trimmed_object <- estimateTagwiseDisp(trimmed_object)
+norm_counts.table <- t(t(trimmed_object$pseudo.counts)*(trimmed_object$samples$norm.factors))
+trimmed_libsize <- log(colSums(norm_counts.table))
 
 trimmed_parms <- list(y=trimmed_object, fc=trimmed_fc[-nofit,], 
                       dispsCR = trimmed_dispsCR[-nofit], 
@@ -1452,7 +1464,7 @@ auc_table$ord_sample_fac<- ordered(auc_table$ord_sample_fac,
                                    levels = c("nSample = 4", "nSample = 8", "nSample = 16"))
 
 glimpse(auc_table)
-  
+
 # ds -> DESeq; ds2->DESeq2; er->edgeR; ss -> sSeq; eb -> EBSeq; ebayes->eBayes
 auc_table$method[which(auc_table$method=="ds2")] <- "DESeq2"
 auc_table$method[which(auc_table$method=="ds")] <- "DESeq"
@@ -1460,7 +1472,7 @@ auc_table$method[which(auc_table$method=="er")] <- "edgeR"
 auc_table$method[which(auc_table$method=="ss")] <- "sSeq"
 auc_table$method[which(auc_table$method=="eb")] <- "EBSeq"
 auc_table$method[which(auc_table$method=="ebayes")] <- "eBayes"
-  
+
 sp <- ggplot(auc_table, 
              aes(x=reorder(method,auc_value,mean), 
                  y=auc_value, group=genes)) + 
