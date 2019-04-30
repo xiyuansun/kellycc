@@ -41,9 +41,9 @@
 \begin{frame}
 \maketitle
 
-\pause
 
-\vspace{0.2in} \pause
+
+\vspace{0.2in} 
 
 {\tiny
 This research was built on Niemi et al's approach (Niemi et al., 2015). Their research was supported by National Institute of General Medical Sciences (NIGMS) of the National Institutes of Health and joint National Science Foundation / NIGMS Mathematial Biology Program under award number R01GM109458. 
@@ -129,7 +129,6 @@ AC148152.3\_FG005 & 2323 & 1533 & 1932 & 1945 & 2070 & 1582 & 2196 & 1882 \\
 }
 \end{table}
 
-\pause
 {\small
 \begin{itemize}
 \item DE genes: expression in Genotype Variety $B73$ is different from that in another Genotype Variety $Mo17$
@@ -146,7 +145,6 @@ AC148152.3\_FG005 & 2323 & 1533 & 1932 & 1945 & 2070 & 1582 & 2196 & 1882 \\
 A gene is regarded as differentially expressed (DE) when the expected count reads of this gene corresponding to one genotype variety differs from that of another genotype variety. 
 \end{definition}
 
-\pause
 \begin{center}
 \includegraphics{heterosis}
 \end{center}
@@ -197,7 +195,7 @@ Let
 \item $j$ ($j=1,2,3,4$)
 \item $Y_{gij}$ be the RNAseq counts of gene $g$, genotype variety $i$, replicate $j$
 \end{itemize}
-\pause
+
 We assume 
 \begin{equation}
 Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )
@@ -238,7 +236,7 @@ We assume
 \[ 
 Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )
 \]
-\pause
+
 where 
 \begin{itemize}[<+->]
 \item $\mu_{gij} = \exp(x_i^T\beta_g + \log(N_{ij}))$
@@ -354,7 +352,7 @@ Parameter estimation use {\tt edgeR}: $\hat{\beta}_{g1}, \hat{\beta}_{g2}, \hat{
 Simulation scenario set up: nGenes, nSamples, pDiff
 \newline
 \newline
-Simulation model: $Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )$ with $\mu_{gij} = \exp(x_i^T\beta_g + \log(N_{ij}))$ where $N_{ij}$ is the normalized library size. For non-DE genes, we set $\mu_{g1} = \mu_{g2}$. 
+Simulation model: $Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )$ with $\mu_{gij} = \exp(x_i^T\beta_g + \log(N_{ij})) = N_{ij}\exp(x_i^T\beta_g)$ where $N_{ij}$ is the normalized library size. For non-DE genes, we set $\mu_{g1} = \mu_{g2} = \frac{1}{nSamples} \sum_{j=1}^{nRep} [N_{1j}\exp(x_1^T\beta_{g1}) + N_{2j}\exp(x_2^T\beta_{g2})]$. 
 
 \end{frame}
 
