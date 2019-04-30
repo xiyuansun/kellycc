@@ -175,7 +175,7 @@ Mean, Dispersion
 
 \item Test for DE
 
-Exact test, Wald test, t-test
+Exact test, Wald test
 
 \end{itemize}
 
