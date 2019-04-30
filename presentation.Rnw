@@ -7,7 +7,7 @@
 
 \setlength{\unitlength}{\textwidth}  % measure in textwidths
 \usepackage[normalem]{ulem}
-
+\usepackage{colortbl}
 % to avoid counting all pages
 \newcommand{\backupbegin}{
    \newcounter{finalframe}
@@ -31,11 +31,27 @@
 \institute[ISU]{Iowa State University}
 \date{\today}
 
-\title[Differential Expression Analysis Methods Comparison]{Empirical Bayesian analysis of RNAseq data for differentially expressed genes detection}
+\title[Empirical Bayesian Method vs. Other Methods]{Differential Expression Analysis Methods Comparison}
 \author{Xiyuan Sun}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
+
+\begin{frame}
+\maketitle
+
+\pause
+
+\vspace{0.2in} \pause
+
+{\tiny
+This research was built on Niemi et al's approach (Niemi et al., 2015). Their research was supported by National Institute of General Medical Sciences (NIGMS) of the National Institutes of Health and joint National Science Foundation / NIGMS Mathematial Biology Program under award number R01GM109458. 
+}
+
+\end{frame}
+
+
+
 
 
 \begin{frame}
@@ -44,12 +60,14 @@
 \begin{itemize}
 \item Background
 	\begin{itemize}
-	\item Differentially Expression (DE)
-	\item RNAseq data \pause
+	\item RNA-seq procedure
+	\item RNA-seq data
+	\item Differential Expression (DE) Analysis\pause
 	\end{itemize}
 \item Modeling 
 	\begin{itemize}
 	\item Null hypothesis \pause
+	\item Negative Binomial Model in Generalized Linear Model \pause
 	\item Hierarchical overdispersed count regression model \pause
 	\end{itemize}
 \item Inference
@@ -58,12 +76,81 @@
 	\end{itemize}
 \item Simulation studies
 	\begin{itemize}
-	\item Differentially Expressed Genes detection via ROC curves \pause
+	\item DE Genes detection via ROC curves \pause
+	\item Area under ROC curve values
 	\end{itemize}
 %\item Ongoing work
 \end{itemize}
 
 \end{frame}
+
+
+\section{Background}
+\subsection{RNA-seq Procedure}
+
+\begin{frame}
+\frametitle{RNA fragmentation, sequencing, and alignment}
+\setkeys{Gin}{width=0.5\textwidth}
+\begin{center}
+\includegraphics{rnaseq3}
+\end{center}
+{\tiny (Pepke, Wold, and Mortazavi (2009) \url{http://www.nature.com/nmeth/journal/v6/n11s/fig_tab/nmeth.1371_F5.html})}
+\end{frame}
+
+\begin{frame}
+\frametitle{RNAseq data}
+\begin{table}[ht]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|r|r|r|r|r|>{\columncolor[gray]{0.8}}r|>{\columncolor[gray]{0.8}}r|>{\columncolor[gray]{0.8}}r|>{\columncolor[gray]{0.8}}r|}
+  \hline
+ Genes & B73 & B73 & B73 & B73 & Mo17 & Mo17 & Mo17 & Mo17 \\ 
+ & Sample1 & Sample2 & Sample3 & Sample4 & Sample1 & Sample2 &Sample3 & Sample4\\
+  \hline
+\textbf{AC148152.3\_FG001} &   3 &   4 &   6 &   0 &   8 &  17 &  18 &  20 \\ 
+  \textbf{AC148152.3\_FG008} &   3 &   3 &   4 &   1 &  31 &  40 &  45 &  49 \\ 
+  \textbf{AC152495.1\_FG002} &  33 &  46 &  18 &  13 &   4 &   0 &   2 &   6 \\ 
+  \textbf{AC152495.1\_FG017} &  41 &  44 &  16 &  13 &   2 &   2 &   2 &   0 \\ 
+  \textbf{AC184130.4\_FG012} &  24 &  47 &  18 &  21 & 110 & 144 & 121 &  96 \\ 
+  \textbf{AC184133.3\_FG001} &   0 &   1 &   1 &   0 &  14 &  13 &   4 &   9 \\ 
+   \hline
+   \hline
+AC148152.3\_FG005 & 2323 & 1533 & 1932 & 1945 & 2070 & 1582 & 2196 & 1882 \\ 
+  AC148167.6\_FG001 & 672 & 598 & 728 & 713 & 743 & 655 & 821 & 824 \\ 
+  AC149475.2\_FG002 & 459 & 438 & 451 & 483 & 467 & 448 & 634 & 532 \\ 
+  AC149475.2\_FG003 & 1184 & 976 & 1131 & 1206 & 891 & 743 & 1288 & 1107 \\ 
+  AC149475.2\_FG005 & 551 & 535 & 360 & 353 & 550 & 524 & 492 & 440 \\ 
+  AC149475.2\_FG007 & 245 & 214 & 169 & 159 & 297 & 262 & 210 & 302 \\ 
+   \hline
+\end{tabular}%
+}
+\end{table}
+
+\pause
+{\small
+\begin{itemize}
+\item DE genes: expression in Genotype Variety $B73$ is different from that in another Genotype Variety $Mo17$
+\end{itemize}
+}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Differential Expression Analysis}
+\begin{definition}
+A gene is regarded as differentially expressed (DE) when the expected count reads of this gene corresponding to one genotype variety differs from that of another genotype variety. 
+\end{definition}
+
+\pause
+\begin{center}
+\includegraphics{heterosis}
+\end{center}
+
+{\tiny (\url{http://www2.iastate.edu/~nscentral/news/06/may/vigor.shtml} modified by Will Landau)} 
+\end{frame}
+
 
 \end{document} 
 
