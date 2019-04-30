@@ -62,21 +62,22 @@ This research was built on Niemi et al's approach (Niemi et al., 2015). Their re
 	\begin{itemize}
 	\item RNA-seq procedure
 	\item RNA-seq data
-	\item Differential Expression (DE) Analysis\pause
+	\item Differential Expression (DE) Analysis
 	\end{itemize}
 \item Modeling 
 	\begin{itemize}
-	\item Null hypothesis \pause
-	\item Negative Binomial Model in Generalized Linear Model \pause
-	\item Hierarchical overdispersed count regression model \pause
+	\item Negative Binomial Model in Generalized Linear Model 
+	\item Hierarchical overdispersed count regression model 
+	\item Null hypotheis for DE analysis
 	\end{itemize}
 \item Inference
 	\begin{itemize}
 	\item Empirical Bayes
+	\item Alternative Methods
 	\end{itemize}
 \item Simulation studies
 	\begin{itemize}
-	\item DE Genes detection via ROC curves \pause
+	\item DE Genes detection via ROC curves
 	\item Area under ROC curve values
 	\end{itemize}
 %\item Ongoing work
@@ -86,7 +87,7 @@ This research was built on Niemi et al's approach (Niemi et al., 2015). Their re
 
 
 \section{Background}
-\subsection{RNA-seq Procedure}
+\subsection{RNA-seq procedure}
 
 \begin{frame}
 \frametitle{RNA fragmentation, sequencing, and alignment}
@@ -97,6 +98,7 @@ This research was built on Niemi et al's approach (Niemi et al., 2015). Their re
 {\tiny (Pepke, Wold, and Mortazavi (2009) \url{http://www.nature.com/nmeth/journal/v6/n11s/fig_tab/nmeth.1371_F5.html})}
 \end{frame}
 
+\subsection{RNA-seq data}
 \begin{frame}
 \frametitle{RNAseq data}
 \begin{table}[ht]
@@ -105,7 +107,7 @@ This research was built on Niemi et al's approach (Niemi et al., 2015). Their re
 \begin{tabular}{|r|r|r|r|r|>{\columncolor[gray]{0.8}}r|>{\columncolor[gray]{0.8}}r|>{\columncolor[gray]{0.8}}r|>{\columncolor[gray]{0.8}}r|}
   \hline
  Genes & B73 & B73 & B73 & B73 & Mo17 & Mo17 & Mo17 & Mo17 \\ 
- & Sample1 & Sample2 & Sample3 & Sample4 & Sample1 & Sample2 &Sample3 & Sample4\\
+ & Rep1 & Rep2 & Rep3 & Rep4 & Rep1 & Rep2 &Rep3 & Rep4\\
   \hline
 \textbf{AC148152.3\_FG001} &   3 &   4 &   6 &   0 &   8 &  17 &  18 &  20 \\ 
   \textbf{AC148152.3\_FG008} &   3 &   3 &   4 &   1 &  31 &  40 &  45 &  49 \\ 
@@ -136,9 +138,9 @@ AC148152.3\_FG005 & 2323 & 1533 & 1932 & 1945 & 2070 & 1582 & 2196 & 1882 \\
 \end{frame}
 
 
-
+\subsection{DE Analysis}
 \begin{frame}
-\frametitle{Differential Expression Analysis}
+\frametitle{Differential Expression Genes}
 \begin{definition}
 A gene is regarded as differentially expressed (DE) when the expected count reads of this gene corresponding to one genotype variety differs from that of another genotype variety. 
 \end{definition}
@@ -149,6 +151,234 @@ A gene is regarded as differentially expressed (DE) when the expected count read
 \end{center}
 
 {\tiny (\url{http://www2.iastate.edu/~nscentral/news/06/may/vigor.shtml} modified by Will Landau)} 
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Differential expression analysis}
+
+\begin{definition}
+For a given gene, we use statistical testing to decide whether an observed difference in read counts is significant, i.e., whether it is greater than what would be expected just due to natural random variation.
+\end{definition}
+
+\begin{itemize}
+\item Normalization
+
+Estimated normalization factors should ensure that a gene with the same expression level in two samples is not detected as DE. 
+\item Assumed distribution
+
+Negative binomial
+
+\item Parameter estimation
+
+Mean, Dispersion
+
+\item Test for DE
+
+Exact test, Wald test, t-test
+
+\end{itemize}
+
+\end{frame}
+
+
+\section{Modeling}
+
+\subsection{Negative Binomial Model in Generalized Linear Model}
+
+\begin{frame}
+\frametitle{Negative Binomial Model in Generalized Linear Model Framework (Part 1)}
+
+Let 
+\begin{itemize}
+\item $g$ ($g=1,\ldots,G$) identify the gene, 
+\item $i$ ($i=1,2$) identify the genotype variety, 
+\item $j$ ($j=1,2,3,4$)
+\item $Y_{gij}$ be the RNAseq counts of gene $g$, genotype variety $i$, replicate $j$
+\end{itemize}
+\pause
+We assume 
+\[ 
+Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )
+\]
+\pause
+where 
+\begin{itemize}[<+->]
+\item $\mu_{gij}$ are means of read counts of gene $g$ genotype $i$ replicate $j$,
+\item $\phi_{g}$ allow for gene-specific overdispersion
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Negative Binomial Model in Generalized Linear Model Framework (Part 2)}
+
+In the generalized linear model (GLM) setting, the mean response, $\mu_{gij}$ is linked to a linear predictor with natural log link:
+
+\[ 
+log(\mu_{gij}) = x_{i}^T \beta_g + log(N_{ij})
+\]
+where 
+\begin{itemize}[<+->]
+\item $x_{i}$ is row of the design matrix containing the covariates indicating this sample belongs to variety $i$,
+\item $\beta_g = (\beta_{g1}, \beta_{g2})$ is a vector of regression parameters
+\item $N_{ij}$ is the normalized library size of replicate $j$ in variety $i$
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\subsection{Hierarchical overdispersed count regression model}
+
+\begin{frame}
+\frametitle{Hierarchical model for RNA-seq counts}
+
+We assume 
+\[ 
+Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )
+\]
+\pause
+where 
+\begin{itemize}[<+->]
+\item $\mu_{gij} = \exp(x_i^T\beta_g + \log(N_{ij}))$
+\item $\lambda_{gi} = x_i^T\beta_g, \gamma_{ij} = \log(N_{ij})$, then $\gamma_{ij}$ are normalization factors
+\item $\phi_{g} = \exp(\psi_g)$ allow for gene-specific overdispersion
+\end{itemize}
+
+We reparameterized the mean dispersion structure into the genespecific average $\beta_{g1}$ and half-variety difference $\beta_{g2}$ 
+\[ 
+\beta_{g1} = \frac{\lambda_{g1}+\lambda_{g2}}{2}, \beta_{g2} = \frac{\lambda_{g1}-\lambda_{g2}}{2}
+\]
+
+we also assume 
+\[ 
+\beta_{g1}  \ind \text{N} \left ( \eta_{\beta_{1}}, \sigma^2_{\beta_1} \right ), 
+\beta_{g2} \ind \text{N} \left ( \eta_{\beta_2}, \sigma^2_{\beta_2} \right ),
+\psi_g \ind \text{N} \left (\eta_{\psi} , \sigma^2_{\psi}  \right )
+\]
+$\beta_{g1}, \beta_{g2}, \psi_g$ are independent to each other.
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Empirical Bayes Method}
+
+Let 
+\begin{itemize}
+\item $\theta = (\theta_1, ..., \theta_G)$ ($g=1,\ldots,G$) where $\theta_g = (\beta_{g1}, \beta_{g2}, \psi_g)$, 
+\item $\gamma_{ij}$ is the normalized facor for replicate $j$ in variety $i$, 
+\item $\pi=(\eta, \sigma)$,where $\eta=(\eta_{\beta_1}, \eta_{\beta_2}, \eta_{\psi}), \sigma = (\sigma_{\beta_1}, \sigma_{\beta_2}, \sigma_\psi)$
+\end{itemize}
+
+Then,
+
+\begin{itemize}
+\item $\hat{\gamma}$ was obtained from trimmed mean of M values (TMM)
+\item $\hat{\psi}_g$ was got through the adjusted profile likelihood (APL)
+\item $\hat{\beta}_{g1}, \hat{\beta}_{g1}$ was retrieved by fitting the generalized linear model with log link function
+\item $\hat{\pi} = (\hat{\eta}, \hat{\sigma})$, where $\hat{\eta} = \sum_{g=1}^G \hat{\beta}/G, \hat{\sigma}^2 = \sum_{g=1}^G (\hat{\beta}-\hat{\eta})^2/(G-1)$
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Empirical Bayes Method (cont)}
+\begin{center}
+\includegraphics[scale=1, height=10cm]{dag1c}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Null Hypothesis for DE Analysis}
+
+$$H_0: \beta_{g2}=0$$ which is equivalent to $\lambda_{g1}=\lambda_{g2}$
+
+Statistics used to do the DE analysis is based on the posterior probabilities of $\beta_{g2}$ as
+
+$$P(DE_g|y, \hat{\pi}, \hat{\gamma}) = \min(P(\beta_{g2}<0|y, \hat{\pi}, \hat{\gamma}), P(\beta_{g2}>0|y, \hat{\pi}, \hat{\gamma}))$$
+where $P(\beta_{g2}<0|y, \hat{\pi}, \hat{\gamma}) = \frac{1}{M}\sum_{m=1}^M I(\beta_{g2}^{(m)} < 0)$, and $P(\beta_{g2}>0|y, \hat{\pi}, \hat{\gamma}) = \frac{1}{M}\sum_{m=1}^M I(\beta_{g2}^{(m)} > 0)$
+
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Alternative Methods}
+
+Normalization
+
+{\tt edgeR} used gene-wise trimmed median of means (TMM), while {\tt DESeq, DESeq2, sSeq, EBSeq} used sample-wise size factor. \\
+
+Dispersion estimation
+
+{\tt edgeR} used Cox-Reid approximate conditional inderence (CRACI) moderate towards the mean while {\tt DESeq, DESeq2} used CRACI with focus on maximum individual dispersion estimate; {\tt sSeq} estimated dispersion by pooling all the samples using the method of moments(MM), and then shrinking the gene-wise estimates through minimizing the mean-square error; {\tt EBSeq} also estimated the gene-specific varainces via MM. \\
+
+
+Test for DE
+
+{\tt edgeR, sSeq} used exact test for 2 factors; {\tt DESeq, DESeq2} used Wald test for 2 factors; 
+
+\end{frame}
+
+\section{Simulation studies}
+
+
+\begin{frame}
+\frametitle{Simulation studies}
+
+Parameter estimation use {\tt edgeR}: $\hat{\beta}_{g1}, \hat{\beta}_{g2}, \hat{\phi}_g$, and the normalized library sizes $N_{ij}$
+\newline
+\newline
+Simulation scenario set up: nGenes, nSamples, pDiff
+\newline
+\newline
+Simulation model: $Y_{gij} \ind \text{NB} \left (\mu_{gij}, \phi_g \right )$ with $\mu_{gij} = \exp(x_i^T\beta_g + \log(N_{ij}))$ where $N_{ij}$ is the normalized library size. For non-DE genes, we set $\mu_{g1} = \mu_{g2}$. 
+
+\end{frame}
+
+
+\section{Simulation Results}
+\begin{frame}
+
+\frametitle{AUC Plot}
+\begin{center}
+\includegraphics{auc_plot}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Summary of the Results}
+
+
+Effect of nGenes: not obvious
+\newline
+\newline
+Effect of pDiff: smaller pDiff -> larger differences between {\tt eBayes} and other methods
+\newline
+\newline
+Effect of nSample: smaller nSample -> larger differences between {\tt eBayes} and other mehods
+
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Discussion}
+
+For the future research, we could:
+\newline
+(1) add more methods: baySeq, ShrinkSeq, NOISeq, SAMseq;\\
+(2) include more varieties;\\
+(3) consider the flow cell effects;\\
+(4) improve the eBayes by refining the hierarchical model
+
 \end{frame}
 
 
