@@ -15,8 +15,8 @@ library(DESeq)
 library(DESeq2)
 library(sSeq)
 library(EBSeq)
-library(baySeq)
-library(ShrinkBayes)
+#library(baySeq)
+#library(ShrinkBayes)
 
 
 library(tidyr)
@@ -31,13 +31,22 @@ library(ggplot2)
 #help functions
 ###########################################################
 
-#trim real datasets
-
 #counts is a num_gene x num_sample matrix
 #group is a num_sample length factor mapping columns to groups
 #geneid is a num_gene length vector rows to genes, i.e. 1:G or descriptive names
 #z.allow.tr is maximum zeros allowable for any treatment(gene)
 #mean.thr is a minimum average count for a gene
+
+
+
+#' Remove the genes with at most z.allow.tr zeros in each variety
+#' also removed genes whose mean counts are less than mean.thr
+#' @param counts the count data to trim
+#' @param group 2-level variety factors
+#' @param geneid genes id names 
+#' @param z.allow.tr most number of zeros in each variety
+#' @param mean.thr minimum mean expression for each gene across all the varieties
+#' @return trimmed count data
 
 trim_genes <- function(counts, group, geneid, z.allow.tr = 2, mean.thr = exp(1)){
   
@@ -61,10 +70,139 @@ trim_genes <- function(counts, group, geneid, z.allow.tr = 2, mean.thr = exp(1))
   allflags = sort(unique(c(flag_zeros,flag_low)))
   
   trimmed_data <- list(counts[-allflags,],geneid[-allflags])
+  trimmed_data <- trimmed_data[[1]]
   return(trimmed_data)
 }
 
-#simulation helper functions
+#' Estimate parameters based on a count data
+estimate_params <- function(rawdata, condition){
+  y <- rawdata %>% 
+    DGEList() %>%
+    calcNormFactors()
+  
+  design <- model.matrix(~factor(condition))
+  rownames(design) <- colnames(y)
+  
+  dispCoxReidInterpolateTagwise (y$counts, design=design, offset=getOffset(y), 
+                                 dispersion=.1, trend=FALSE, AveLogCPM=NULL, 
+                                 min.row.sum=5, prior.df=0, span=0.3, 
+                                 grid.npts=15, grid.range=c(-8,8)) -> dispsCR
+  sample_data = data.frame(condition)
+  sample_data$libsize = log(colSums(y$counts))
+  
+  libsize = sample_data$libsize
+  nofit = 1000000
+  fc = matrix(nrow=dim(y$counts)[1], ncol=2)
+  for(i in 1:dim(y$counts)[1]) {
+    f <- negative.binomial(link="log",theta=1/dispsCR[i])
+    tryCatch({glm(y$counts[i,] ~ condition + 0, offset=libsize, family=f) -> fit},
+             warning=function(w) {assign('nofit', c(nofit, i), parent.env(environment()))})
+    fc[i,] <- fit$coefficients
+  }
+  y <- DGEList(counts=rawdata[-nofit,])
+  list(y=y, fc=fc[-nofit,], dispsCR = dispsCR[-nofit], sample_data=sample_data, nofit=nofit)
+  
+}
+
+#label de, overlapped multiple packages
+
+# DE analysis based on the rna_count_data
+of_DE_call <- function(rawdata, condition) {
+  #rawdata = rna_count_data; condition=trimmed_cond
+  #DESeq2#
+  dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = data.frame(condition), design = ~condition)
+  dds <- estimateSizeFactors(dds)
+  dds <- estimateDispersions(dds)
+  dds <- nbinomWaldTest(dds)
+  res <- results(dds)
+  pval = res$pval
+  padj = res$padj
+  res = cbind(pval, padj)
+  ds2 <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #DESeq#
+  DESeq_cds = newCountDataSet(rawdata, condition)
+  DESeq_cds = estimateSizeFactors(DESeq_cds)
+  DESeq_cds = estimateDispersions(DESeq_cds)
+  pval = nbinomTest(DESeq_cds, unique(condition)[1],unique(condition)[2], pvals_only=TRUE)
+  padj = p.adjust( pval, method="BH")
+  res = cbind(pval, padj)
+  ds <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #edgeR#
+  edgeR_cds = DGEList(rawdata, group = condition )
+  edgeR_cds = calcNormFactors( edgeR_cds )
+  edgeR_cds = estimateCommonDisp( edgeR_cds )
+  edgeR_cds = estimateTagwiseDisp( edgeR_cds )
+  res = exactTest(edgeR_cds, pair =c(unique(condition)[1],unique(condition)[2]))$table
+  pval = res$PValue
+  padj = p.adjust( pval, method="BH")
+  res = cbind(pval, padj)
+  er <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #sSeq#
+  as.character(condition) -> sSeq_condition
+  res <- nbTestSH(rawdata, sSeq_condition, condA = unique(sSeq_condition)[1],condB = unique(sSeq_condition)[2])
+  pval = res$pval
+  padj = p.adjust( pval, method="BH")
+  res = cbind(pval, padj)
+  ss <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  #NPEBSeq#
+  #G1data <- rawdata[,which(condition==levels(condition)[1])]
+  #G2data <- rawdata[,which(condition==levels(condition)[2])]
+  #maxid1<-which.max(colSums(G1data))   
+  #maxid2<-which.max(colSums(G2data))
+  #Q1<-compu_prior(G1data[,maxid1],maxiter=100,grid.length=1000)
+  #Q2<-compu_prior(G2data[,maxid2],maxiter=3000,grid.length=1000)
+  #resg<-NPEBSeq_biordf(G1data,G2data,Q1,Q2)  
+  
+  #EBSeq
+  
+  Sizes = MedianNorm(rawdata)
+  EBOut = EBTest(Data = rawdata, Conditions = condition,sizeFactors = Sizes, maxround = 5)
+  data.frame(pval=1-GetPP(EBOut)) -> temp0
+  temp1 = rawdata
+  merge(temp1, temp0, all.x=TRUE, by.x=0, by.y=0)-> temp2
+  pval = temp2[,"pval"]
+  names(pval) = temp2[,"Row.names"]
+  pval = pval[rownames(rawdata)]
+  padj = pval
+  res = cbind(pval, padj)
+  eb <- as.matrix(res)
+  rm(res, pval, padj)	
+  
+  
+  #AMAP.Seq#
+  #mydata = RNASeq.Data(rawdata, size=Norm.GMedian(rawdata), group = sSeq_condition)
+  #decom.est=MGN.EM(mydata,nK=3,p0=NULL,d0=0,iter.max=10,nK0=3)
+  #res=test.AMAP(mydata, MGN=decom.est$MGN,FC=1.0)
+  #pval = res$prob
+  #padj = res$fdr
+  #res = cbind(pval, padj)
+  #am <- as.matrix(res)
+  #rm(res, pval, padj)	
+  
+  #packages = c("ds2", "ds","er","ss","eb")
+  packages = c("ds2", "ds","er","ss", "eb")
+  
+  de = rep(TRUE, dim(rawdata)[1])
+  for(i in packages) {
+    temp = length(which(get(i)[,"padj"] < 0.05))
+    print(paste(i,": number of DE called",temp))
+    de = de & get(i)[,"padj"] < 0.05
+  }	
+  print(paste("intersection :",length(which(de))))
+  de[is.na(de)] <- FALSE
+  de
+}
+
+
+
 
 #input fitted parameters from preliminary data 
 #output NB count simulated data
@@ -94,10 +232,9 @@ KS_NBsim <-function(params,nGenes, nSample, pDiff, seed){
   
   
   #for nonDE genes
-  #set two group means the same
-  #mu_g1 = mu_g2
-  #mu_g1j = libsize_(1j)*exp(fc[g,1])
-  #mu_g2j = libsize_(2j)*exp(fc[g,2])
+  #set two lambda's to be the same
+  fc_r[!true_de, ] = c(mean(fc_r[!true_de, ]), mean(fc_r[!true_de, ]))# must be right
+  
   mu = matrix(nrow=length(disps_r), ncol=nSample)
   
   for (i in 1:length(disps_r)){
@@ -522,7 +659,7 @@ plot_roc_all <- function(all_result, name){
 
 # 2 varieties: B73 and Mo17
 # 4 replicates per variety
-real_count <- readRDS("./real/data/paschold.rds") 
+real_count <- readRDS("~/Desktop/kellycc/code/real/data/paschold.rds") 
 
 real_split_names <- unlist(strsplit(colnames(real_count), "[_]"))
 real_sample_names <- real_split_names[seq_along(real_split_names)%%2 !=0]
@@ -544,11 +681,11 @@ real_geneid <- rownames(real_count)
 
 # use trim_genes function in help_func.R
 
-trimmed_real_data <- trim_genes(counts=real_count, group=real_group, 
+trimmed_data <- trim_genes(counts=real_count, group=real_group, 
                                 geneid=real_geneid, z.allow.tr = 2,
                                 mean.thr = exp(1))
 
-trimmed_data <- trimmed_real_data[[1]]
+#trimmed_data <- trimmed_real_data[[1]]
 
 saveRDS(trimmed_data, "./real/data/trimmed_real_data.rds")
 
@@ -556,168 +693,17 @@ saveRDS(trimmed_data, "./real/data/trimmed_real_data.rds")
 #Step 3: Estimate parameters based on trimmed real data
 ###########################################################
 
-trimmed_data <- readRDS("~/Desktop/kellycc/code/real/data/trimmed_real_data.rds")
+trimmed_data <- readRDS("./real/data/trimmed_real_data.rds")
 trimmed_cond <- factor(colnames(trimmed_data))
-# DGEList object of the trimmed real data
-trimmed_object <- trimmed_data %>% DGEList()
-# design matrix of trimmed real data
-trimmed_design <- model.matrix(~trimmed_cond)
-rownames(trimmed_design) <- colnames(trimmed_object)
-# dispersion estimation
-trimmed_dispsCR <- dispCoxReidInterpolateTagwise(trimmed_object$counts, 
-                                                 design=trimmed_design,
-                                                 offset=getOffset(trimmed_object), 
-                                                 dispersion=.1,
-                                                 trend=FALSE, AveLogCPM=NULL, 
-                                                 min.row.sum=5,
-                                                 prior.df=0, span=0.3, grid.npts=15,
-                                                 grid.range=c(-8,8))
+trimmed_parms <- estimate_params(rawdata = trimmed_data, condition =trimmed_cond)
 
-#lib size of each sample
-trimmed_sample_data = data.frame(trimmed_cond)
-trimmed_sample_data$libsize = log(colSums(trimmed_object$counts))
-trimmed_libsize = trimmed_sample_data$libsize
-# trimmed real data fold-change
-nofit = 1000000
-trimmed_fc = matrix(nrow=dim(trimmed_object$counts)[1], ncol=2)
+saveRDS(trimmed_parms, "./real/data/trimmed_parms.rds")
 
-for(i in 1:dim(trimmed_object$counts)[1]) {
-  f <- negative.binomial(link="log",theta=1/trimmed_dispsCR[i])
-  tryCatch({glm(trimmed_object$counts[i,] ~ real_cond + 0, offset=trimmed_libsize, family=f) -> fit},
-           warning=function(w) {assign('nofit', c(nofit, i), parent.env(environment()))})
-  trimmed_fc[i,] <- fit$coefficients
-}
-
-# updated the trimmed real data DGEList object with nofit
-trimmed_object <- trimmed_data[-nofit,]%>% DGEList()%>%calcNormFactors()
-
-trimmed_parms <- list(y=trimmed_object, fc=trimmed_fc[-nofit,], 
-                      dispsCR = trimmed_dispsCR[-nofit], 
-                      sample_data=trimmed_sample_data, 
-                      nofit=nofit)
-
-
-
-trimmed_object <- estimateCommonDisp(trimmed_object)
-trimmed_object <- estimateTagwiseDisp(trimmed_object)
-norm_counts.table <- t(t(trimmed_object$pseudo.counts)*(trimmed_object$samples$norm.factors))
-trimmed_libsize <- log(colSums(norm_counts.table))
-
-trimmed_parms <- list(y=trimmed_object, fc=trimmed_fc[-nofit,], 
-                      dispsCR = trimmed_dispsCR[-nofit], 
-                      sample_data=trimmed_sample_data, 
-                      nofit=nofit)
-
-saveRDS(trimmed_parms, "./sim/trimmed_parms.rds")
-#(head(trimmed_object@.Data[[1]]))
-rna_count_data <- trimmed_object@.Data[[1]]
-colnames(rna_count_data) <- c("B73_1", "B73_2", "B73_3","B73_4","Mo17_1", "Mo17_2", "Mo17_3","Mo17_4")
-rna_cond <- factor(c("B73", "B73", "B73","B73","Mo17", "Mo17", "Mo17","Mo17"))
-
-rna_de <- of_DE_call(rawdata = rna_count_data, condition=rna_cond)
-
-
-
-# DE analysis based on the rna_count_data
-of_DE_call <- function(rawdata, condition) {
-  #rawdata = rna_count_data; condition=trimmed_cond
-  #DESeq2#
-  dds <- DESeqDataSetFromMatrix(countData = rawdata, colData = data.frame(condition), design = ~condition)
-  dds <- estimateSizeFactors(dds)
-  dds <- estimateDispersions(dds)
-  dds <- nbinomWaldTest(dds)
-  res <- results(dds)
-  pval = res$pval
-  padj = res$padj
-  res = cbind(pval, padj)
-  ds2 <- as.matrix(res)
-  rm(res, pval, padj)	
-  
-  #DESeq#
-  DESeq_cds = newCountDataSet(rawdata, condition)
-  DESeq_cds = estimateSizeFactors(DESeq_cds)
-  DESeq_cds = estimateDispersions(DESeq_cds)
-  pval = nbinomTest(DESeq_cds, unique(condition)[1],unique(condition)[2], pvals_only=TRUE)
-  padj = p.adjust( pval, method="BH")
-  res = cbind(pval, padj)
-  ds <- as.matrix(res)
-  rm(res, pval, padj)	
-  
-  #edgeR#
-  edgeR_cds = DGEList(rawdata, group = condition )
-  edgeR_cds = calcNormFactors( edgeR_cds )
-  edgeR_cds = estimateCommonDisp( edgeR_cds )
-  edgeR_cds = estimateTagwiseDisp( edgeR_cds )
-  res = exactTest(edgeR_cds, pair =c(unique(condition)[1],unique(condition)[2]))$table
-  pval = res$PValue
-  padj = p.adjust( pval, method="BH")
-  res = cbind(pval, padj)
-  er <- as.matrix(res)
-  rm(res, pval, padj)	
-  
-  #sSeq#
-  as.character(condition) -> sSeq_condition
-  res <- nbTestSH(rawdata, sSeq_condition, condA = unique(sSeq_condition)[1],condB = unique(sSeq_condition)[2])
-  pval = res$pval
-  padj = p.adjust( pval, method="BH")
-  res = cbind(pval, padj)
-  ss <- as.matrix(res)
-  rm(res, pval, padj)	
-  
-  #NPEBSeq#
-  #G1data <- rawdata[,which(condition==levels(condition)[1])]
-  #G2data <- rawdata[,which(condition==levels(condition)[2])]
-  #maxid1<-which.max(colSums(G1data))   
-  #maxid2<-which.max(colSums(G2data))
-  #Q1<-compu_prior(G1data[,maxid1],maxiter=100,grid.length=1000)
-  #Q2<-compu_prior(G2data[,maxid2],maxiter=3000,grid.length=1000)
-  #resg<-NPEBSeq_biordf(G1data,G2data,Q1,Q2)  
-  
-  #EBSeq
-  
-  Sizes = MedianNorm(rawdata)
-  EBOut = EBTest(Data = rawdata, Conditions = condition,sizeFactors = Sizes, maxround = 5)
-  data.frame(pval=1-GetPP(EBOut)) -> temp0
-  temp1 = rawdata
-  merge(temp1, temp0, all.x=TRUE, by.x=0, by.y=0)-> temp2
-  pval = temp2[,"pval"]
-  names(pval) = temp2[,"Row.names"]
-  pval = pval[rownames(rawdata)]
-  padj = pval
-  res = cbind(pval, padj)
-  eb <- as.matrix(res)
-  rm(res, pval, padj)	
-  
-  
-  #AMAP.Seq#
-  #mydata = RNASeq.Data(rawdata, size=Norm.GMedian(rawdata), group = sSeq_condition)
-  #decom.est=MGN.EM(mydata,nK=3,p0=NULL,d0=0,iter.max=10,nK0=3)
-  #res=test.AMAP(mydata, MGN=decom.est$MGN,FC=1.0)
-  #pval = res$prob
-  #padj = res$fdr
-  #res = cbind(pval, padj)
-  #am <- as.matrix(res)
-  #rm(res, pval, padj)	
-  
-  #packages = c("ds2", "ds","er","ss","eb")
-  packages = c("ds2", "ds","er","ss", "eb")
-  
-  de = rep(TRUE, dim(rawdata)[1])
-  for(i in packages) {
-    temp = length(which(get(i)[,"padj"] < 0.05))
-    print(paste(i,": number of DE called",temp))
-    de = de & get(i)[,"padj"] < 0.05
-  }	
-  print(paste("intersection :",length(which(de))))
-  de[is.na(de)] <- FALSE
-  de
-}
-
-
-rna_de <- of_DE_call(rawdata = rna_count_data, condition=trimmed_cond)
-
-xtable::xtable(as.data.frame(head(rna_count_data[!rna_de, ])))
-
+#check the trimmed parameters
+# rna_count_data <- trimmed_object@.Data[[1]]
+# colnames(rna_count_data) <- c("B73_1", "B73_2", "B73_3","B73_4","Mo17_1", "Mo17_2", "Mo17_3","Mo17_4")
+# rna_cond <- factor(c("B73", "B73", "B73","B73","Mo17", "Mo17", "Mo17","Mo17"))
+# rna_de <- of_DE_call(rawdata = rna_count_data, condition=trimmed_cond)
 
 
 #print the estimated parameters
@@ -1151,8 +1137,10 @@ colnames(sc1_sim2_all_pval) <- c(colnames(sc1_sim2_all_pval)[1:6], "ebayes_pval"
 sc1_sim2_auc_result <- plot_roc_all2(all_result=sc1_sim2_all_pval, name="scenario1 sim2 data")
 
 
-
-
+#check the normalized library size
+sc2_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_30_1.rds")
+sc3_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_1_1.rds")
+sc4_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_2_pDiff_10_1.rds")
 
 
 
