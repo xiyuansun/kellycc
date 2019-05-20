@@ -151,6 +151,72 @@ trimmed_parms <- list(y=trimmed_object, fc=trimmed_fc[-nofit,],
 
 #saveRDS(trimmed_parms, "./real/data/trimmed_parms.rds")
 
+##############################################################################################################
+
+# test the KS_NBsim function
+# sc1 sim1 count data
+
+# set arguments for each scenario
+params=trimmed_parms
+nGenes=10000
+nSample=8
+pDiff=0.1 
+seed=1
+
+#set the parameters
+set.seed(seed)
+nRep=nSample/2 #number of replicates in each condition
+fc <-params$fc; dispsCR <- params$dispsCR
+libsizes=params$y@.Data[[2]]$lib.size
+#[1] 11557253 10069175  9021129  9649569 10013130  8996233 10271029  9630958
+
+#randomly select nGenes with replacement
+id_r <- sample(nrow(fc), nGenes, replace = FALSE) #index of selected 10000 genes
+id_r <- sort(id_r)
+fc_r <- fc[id_r,]
+disps_r <- dispsCR[id_r]
+libsizes_r = runif(nSample, min=min(libsizes), max=max(libsizes))
+#9161963 10729051 10879535  9281274  9115716  9331497 11252380 11146787
+
+#de genes index
+indDE <- sample(id_r, floor(pDiff*nGenes), replace=FALSE)
+indDE <- sort(indDE)
+indNonDE<-id_r[!id_r %in% indDE]
+
+true_de <- rep(FALSE, nrow(fc))
+true_de[indDE] <- TRUE
+true_de[indNonDE]<-FALSE
+true_de <- true_de[id_r]
+
+#for nonDE genes
+#set two LFC's to be the same
+mean_expr = (fc_r[,1]+fc_r[,2])/2
+fc_r[!true_de, ] = c(mean_expr[!true_de], mean_expr[!true_de])# corrected line
+
+# y_{gij}
+m = matrix(nrow=length(disps_r), ncol=nSample)
+
+for (i in 1:length(disps_r)){
+  for (j in 1:nSample){
+    m[i,j] <- rnbinom(1, mu = libsizes_r[j]*exp(ifelse(j <= nSample/2, fc_r[i,1],fc_r[i,2])), 
+                       size = 1/disps_r[i])
+  }
+}
+
+label <- paste0(c(rep("A_",nRep),rep("B_",nRep)),rep(1:nRep,2))
+
+colnames(m) = label
+rownames(m) = paste0("g",1:length(disps_r))
+
+result <- as.data.frame(cbind(m,true_de))
+###############################################################################################
+
+# alternative p-values
+
+
+
+
+
 
 
 

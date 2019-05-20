@@ -201,11 +201,13 @@ of_DE_call <- function(rawdata, condition) {
   de
 }
 
-
-
-
-#input fitted parameters from preliminary data 
-#output NB count simulated data
+#' Simulate count data based on a negative binomial distribution
+#' @param params estimated parameters based on real trimmed count data
+#' @param nGenes total number of genes in simulated count data
+#' @param nSample total number of samples in simulated count data
+#' @param pDiff proportion of differentially expressed genes
+#' @param seed seed used to generate the simulated count data
+#' @return the simulated count data
 
 KS_NBsim <-function(params,nGenes, nSample, pDiff, seed){
   set.seed(seed)
@@ -232,33 +234,17 @@ KS_NBsim <-function(params,nGenes, nSample, pDiff, seed){
   
   
   #for nonDE genes
-  #set two lambda's to be the same
-  fc_r[!true_de, ] = c(mean(fc_r[!true_de, ]), mean(fc_r[!true_de, ]))# must be right
+  #set two LFC's to be the same
+  mean_expr = (fc_r[,1]+fc_r[,2])/2
+  fc_r[!true_de, ] = c(mean_expr[!true_de], mean_expr[!true_de])# corrected line
   
-  mu = matrix(nrow=length(disps_r), ncol=nSample)
+  # y_{gij}
+  m = matrix(nrow=length(disps_r), ncol=nSample)
   
   for (i in 1:length(disps_r)){
     for (j in 1:nSample){
-      mu[i,j] <- rnbinom(1, mu = libsizes_r[j]*exp(ifelse(j <= nSample/2, fc_r[i,1],fc_r[i,2])), 
-                         size = 1/disps_r[i])
-    }
-  }
-  
-  group_mean = matrix(nrow=length(disps_r), ncol=2)
-  grp <- seq(1, ncol(mu), by=nRep)
-  group_mean<- sapply(grp, function(x) rowSums(mu[ , x:(x+nRep-1)])/nRep)
-  
-  
-  row_expression <- as.matrix((group_mean[,1]+group_mean[,2])/2,ncol=1)
-  
-  group_mean[!true_de, ] <- c(row_expression[!true_de], row_expression[!true_de])
-  
-  m = matrix(nrow = length(disps_r), ncol = nSample)
-  
-  for(i in 1:length(disps_r)) {
-    for(j in 1:nSample) {
-      m[i,j]=rnbinom(1, mu = ifelse(j <= nSample/2, group_mean[i,1],group_mean[i,2]), 
-                     size = 1/disps_r[i])
+      m[i,j] <- rnbinom(1, mu = libsizes_r[j]*exp(ifelse(j <= nSample/2, fc_r[i,1],fc_r[i,2])), 
+                        size = 1/disps_r[i])
     }
   }
   
@@ -271,7 +257,13 @@ KS_NBsim <-function(params,nGenes, nSample, pDiff, seed){
   return(result)
 }
 
-
+#' Simulate based on scenario parameters
+#' @param params estimated parameters based on trimmed real data
+#' @param nGenes total number of genes in simulated data
+#' @param nSample total number of samples in simulated data
+#' @param pDiff proportion of DE genes
+#' @param nSim number of simulations in one scenario
+#' @return alternative pvalues and true de data frame
 NBsim_scenario <- function(params,nGenes, nSample, pDiff, nSim){
   nRep = nSample/2
   diffPerc = pDiff*100
@@ -708,16 +700,15 @@ saveRDS(trimmed_parms, "./real/data/trimmed_parms.rds")
 
 #print the estimated parameters
 params <- trimmed_parms
-number_genes <- dim(y$counts)[1]
-med_cpm <- median(cpm(y,log=TRUE, prior.count=1))
-med_dispsCR <- median(params$dispsCR)
+number_genes <- dim(trimmed_object$counts)[1] #27619
+med_cpm <- median(cpm(trimmed_object,log=TRUE, prior.count=1)) #3.921875
+med_dispsCR <- median(params$dispsCR) #0.02139625
 fc <- params$fc
-med_fc <- median(log2(exp(abs(fc[,1]-fc[,2]))))
-med_libsize <- mean(log10(exp(params$sample_data$libsize)))
+med_fc <- median(log2(exp(abs(fc[,1]-fc[,2])))) #0.3869139
+med_libsize <- mean(log10(exp(params$sample_data$libsize)))#6.994441
 
-estimated_parms <- rbind(number_genes,med_cpm, med_dispsCR, med_fc, med_libsize)
-
-xtable::xtable(estimated_parms)
+#estimated_parms <- rbind(number_genes,med_cpm, med_dispsCR, med_fc, med_libsize)
+#xtable::xtable(estimated_parms)
 
 print_params <- function(params){
   y = params$y
@@ -780,14 +771,9 @@ print_params(params=trimmed_parms)
 
 # number of genes:	27619
 # cpm	3.92 (1.48 - 5.52)
-# dispersion	0.0281 (0.00723 - 0.091)
-# fc	0.386 (0.171 - 0.841)
+# dispersion	0.0214 (0.00467 - 0.0834)
+# fc	0.387 (0.171 - 0.84)
 # libsize	6.99 +/- 0.00121
-
-
-
-
-
 
 
 ####################################################################
@@ -795,28 +781,28 @@ print_params(params=trimmed_parms)
 ###############################################################
 
 # load the estimated parameters based on trimmed real data
-real_parms <- readRDS("./sim/trimmed_parms.rds")
+trimmed_parms <- readRDS("./real/data/trimmed_parms.rds")
 
-# Example: simulation scenario 18
-#sc18: nGenes=1000, nSample=16, pDiff=0.01, n_sim=5
+# Example: simulation scenario 1
+#sc1: nGenes=10000, nSample=8, pDiff=0.1, n_sim=5
 
-sc18_alter_pval <- NBsim_scenario(params=real_parms,
-                                  nGenes=1000, 
-                                  nSample=16, 
-                                  pDiff=0.01, nSim=5)
+sc1_alter_pval <- NBsim_scenario(params=trimmed_parms,
+                                  nGenes=10000, 
+                                  nSample=8, 
+                                  pDiff=0.1, nSim=5)
 
-saveRDS(sc18_alter_pval, "./sim/results/sc18_alter_pval.rds")
+saveRDS(sc1_alter_pval, "./sim/results/sc1_alter_pval.rds")
 
-sc18_alter_pval <- readRDS("./sim/results/sc18_alter_pval.rds")
+#sc1_alter_pval <- readRDS("./sim/results/sc1_alter_pval.rds")
 
 #add eBayes
 ##############################################
-#sc18
-nGenes=1000; nSample=16; pDiff=0.01
+#sc1
+nGenes=10000; nSample=8; pDiff=0.1
 diffPerc = pDiff*100; nRep=nSample/2
 ##############################################
-#sim5
-i=5;
+#sim1
+i=1;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
