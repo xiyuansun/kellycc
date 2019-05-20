@@ -1,6 +1,6 @@
 #supplemental script
 
-#setwd("~/Desktop/kellycc/code")
+#setwd(".")
 ##########################################################
 #Step 0: Load the required packages
 ##########################################################
@@ -651,7 +651,7 @@ plot_roc_all <- function(all_result, name){
 
 # 2 varieties: B73 and Mo17
 # 4 replicates per variety
-real_count <- readRDS("~/Desktop/kellycc/code/real/data/paschold.rds") 
+real_count <- readRDS("./real/data/paschold.rds") 
 
 real_split_names <- unlist(strsplit(colnames(real_count), "[_]"))
 real_sample_names <- real_split_names[seq_along(real_split_names)%%2 !=0]
@@ -1045,9 +1045,9 @@ plot_roc_all2 <- function(all_result, name){
   return(auc_result)
 }
 
-sc1_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
-sc1_sim1_all_padj <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
-sc1_sim1_ebayes_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
+sc1_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
+sc1_sim1_all_padj <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
+sc1_sim1_ebayes_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
 sc1_sim1_all_pval <- cbind(sc1_sim1_all_padj, sc1_sim1_ebayes_pvals$ebayes_pval)
 colnames(sc1_sim1_all_pval) <- c(colnames(sc1_sim1_all_pval)[1:6], "ebayes_pval") 
 
@@ -1093,9 +1093,9 @@ calculate_tp <- function(simdata, padj_result){
   
 }
 
-sc1_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
-sc1_sim1_all_padj <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
-sc1_sim1_ebayes_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
+sc1_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
+sc1_sim1_all_padj <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
+sc1_sim1_ebayes_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
 sc1_sim1_all_pval <- cbind(sc1_sim1_all_padj, sc1_sim1_ebayes_pvals$ebayes_pval)
 colnames(sc1_sim1_all_pval) <- c(colnames(sc1_sim1_all_pval)[1:6], "ebayes_pval") 
 #calculate type I error
@@ -1115,26 +1115,26 @@ sc1_sim1_fpr_res <- sc1_sim1_fp %>%
 sc1_sim2_tp <- calculate_tp(simdata = sc1_sim1_data, padj_result = sc1_sim1_all_pval)
 
 
-sc1_sim2_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_10_2.rds")
+sc1_sim2_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_10_2.rds")
 sc1_sim2_alt_pvals <- calculate_alt_pvals(sc1_sim2_data)
-sc1_sim2_ebayes_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_2_ebayes_pval.rds")
+sc1_sim2_ebayes_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_2_ebayes_pval.rds")
 sc1_sim2_all_pval <- cbind(sc1_sim2_alt_pvals, sc1_sim2_ebayes_pvals$ebayes_pval)
 colnames(sc1_sim2_all_pval) <- c(colnames(sc1_sim2_all_pval)[1:6], "ebayes_pval") 
 sc1_sim2_auc_result <- plot_roc_all2(all_result=sc1_sim2_all_pval, name="scenario1 sim2 data")
 
 
 #check the normalized library size
-sc2_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_30_1.rds")
-sc3_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_4_pDiff_1_1.rds")
-sc4_sim1_data <- readRDS("~/Desktop/kellycc/code/sim/data/sim_genes_10000_g_2_pDiff_10_1.rds")
+sc2_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_30_1.rds")
+sc3_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_1_1.rds")
+sc4_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_2_pDiff_10_1.rds")
 
 
 
-sc1_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
-sc1_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_2_pval.rds")
-sc1_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_3_pval.rds")
-sc1_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_4_pval.rds")
-sc1_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_10_5_pval.rds")
+sc1_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
+sc1_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_2_pval.rds")
+sc1_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_3_pval.rds")
+sc1_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_4_pval.rds")
+sc1_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc1_sim1_auc <- plot_roc_all(all_result=sc1_sim1_pvals, name="Scenario1 Simulated Data 1")
@@ -1145,11 +1145,11 @@ sc1_sim5_auc <- plot_roc_all(all_result=sc1_sim5_pvals, name="Scenario1 Simulate
 
 
 
-sc2_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_30_1_pval.rds")
-sc2_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_30_2_pval.rds")
-sc2_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_30_3_pval.rds")
-sc2_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_30_4_pval.rds")
-sc2_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_30_5_pval.rds")
+sc2_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_30_1_pval.rds")
+sc2_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_30_2_pval.rds")
+sc2_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_30_3_pval.rds")
+sc2_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_30_4_pval.rds")
+sc2_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_30_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc2_sim1_auc <- plot_roc_all(all_result=sc2_sim1_pvals, name="Scenario2 Simulated Data 1")
@@ -1159,11 +1159,11 @@ sc2_sim4_auc <- plot_roc_all(all_result=sc2_sim4_pvals, name="Scenario2 Simulate
 sc2_sim5_auc <- plot_roc_all(all_result=sc2_sim5_pvals, name="Scenario2 Simulated Data 5")
 
 
-sc3_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_1_1_pval.rds")
-sc3_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_1_2_pval.rds")
-sc3_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_1_3_pval.rds")
-sc3_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_1_4_pval.rds")
-sc3_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_4_pDiff_1_5_pval.rds")
+sc3_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_1_1_pval.rds")
+sc3_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_1_2_pval.rds")
+sc3_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_1_3_pval.rds")
+sc3_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_1_4_pval.rds")
+sc3_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_1_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc3_sim1_auc <- plot_roc_all(all_result=sc3_sim1_pvals, name="Scenario3 Simulated Data 1")
@@ -1173,11 +1173,11 @@ sc3_sim4_auc <- plot_roc_all(all_result=sc3_sim4_pvals, name="Scenario3 Simulate
 sc3_sim5_auc <- plot_roc_all(all_result=sc3_sim5_pvals, name="Scenario3 Simulated Data 5")
 
 
-sc4_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_10_1_pval.rds")
-sc4_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_10_2_pval.rds")
-sc4_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_10_3_pval.rds")
-sc4_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_10_4_pval.rds")
-sc4_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_10_5_pval.rds")
+sc4_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_10_1_pval.rds")
+sc4_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_10_2_pval.rds")
+sc4_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_10_3_pval.rds")
+sc4_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_10_4_pval.rds")
+sc4_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_10_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc4_sim1_auc <- plot_roc_all(all_result=sc4_sim1_pvals, name="Scenario4 Simulated Data 1")
@@ -1187,11 +1187,11 @@ sc4_sim4_auc <- plot_roc_all(all_result=sc4_sim4_pvals, name="Scenario4 Simulate
 sc4_sim5_auc <- plot_roc_all(all_result=sc4_sim5_pvals, name="Scenario4 Simulated Data 5")
 
 
-sc5_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_30_1_pval.rds")
-sc5_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_30_2_pval.rds")
-sc5_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_30_3_pval.rds")
-sc5_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_30_4_pval.rds")
-sc5_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_30_5_pval.rds")
+sc5_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_30_1_pval.rds")
+sc5_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_30_2_pval.rds")
+sc5_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_30_3_pval.rds")
+sc5_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_30_4_pval.rds")
+sc5_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_30_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc5_sim1_auc <- plot_roc_all(all_result=sc5_sim1_pvals, name="Scenario5 Simulated Data 1")
@@ -1200,11 +1200,11 @@ sc5_sim3_auc <- plot_roc_all(all_result=sc5_sim3_pvals, name="Scenario5 Simulate
 sc5_sim4_auc <- plot_roc_all(all_result=sc5_sim4_pvals, name="Scenario5 Simulated Data 4")
 sc5_sim5_auc <- plot_roc_all(all_result=sc5_sim5_pvals, name="Scenario5 Simulated Data 5")
 
-sc6_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_1_pval.rds")
-sc6_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_2_pval.rds")
-sc6_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_3_pval.rds")
-sc6_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_4_pval.rds")
-sc6_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_2_pDiff_1_5_pval.rds")
+sc6_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_1_1_pval.rds")
+sc6_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_1_2_pval.rds")
+sc6_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_1_3_pval.rds")
+sc6_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_1_4_pval.rds")
+sc6_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_2_pDiff_1_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc6_sim1_auc <- plot_roc_all(all_result=sc6_sim1_pvals, name="Scenario6 Simulated Data 1")
@@ -1213,11 +1213,11 @@ sc6_sim3_auc <- plot_roc_all(all_result=sc6_sim3_pvals, name="Scenario6 Simulate
 sc6_sim4_auc <- plot_roc_all(all_result=sc6_sim4_pvals, name="Scenario6 Simulated Data 4")
 sc6_sim5_auc <- plot_roc_all(all_result=sc6_sim5_pvals, name="Scenario6 Simulated Data 5")
 
-sc7_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_10_1_pval.rds")
-sc7_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_10_2_pval.rds")
-sc7_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_10_3_pval.rds")
-sc7_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_10_4_pval.rds")
-sc7_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_10_5_pval.rds")
+sc7_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_10_1_pval.rds")
+sc7_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_10_2_pval.rds")
+sc7_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_10_3_pval.rds")
+sc7_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_10_4_pval.rds")
+sc7_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_10_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc7_sim1_auc <- plot_roc_all(all_result=sc7_sim1_pvals, name="Scenario7 Simulated Data 1")
@@ -1227,11 +1227,11 @@ sc7_sim4_auc <- plot_roc_all(all_result=sc7_sim4_pvals, name="Scenario7 Simulate
 sc7_sim5_auc <- plot_roc_all(all_result=sc7_sim5_pvals, name="Scenario7 Simulated Data 5")
 
 
-sc8_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_30_1_pval.rds")
-sc8_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_30_2_pval.rds")
-sc8_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_30_3_pval.rds")
-sc8_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_30_4_pval.rds")
-sc8_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_30_5_pval.rds")
+sc8_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_30_1_pval.rds")
+sc8_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_30_2_pval.rds")
+sc8_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_30_3_pval.rds")
+sc8_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_30_4_pval.rds")
+sc8_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_30_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc8_sim1_auc <- plot_roc_all(all_result=sc8_sim1_pvals, name="Scenario8 Simulated Data 1")
@@ -1240,11 +1240,11 @@ sc8_sim3_auc <- plot_roc_all(all_result=sc8_sim3_pvals, name="Scenario8 Simulate
 sc8_sim4_auc <- plot_roc_all(all_result=sc8_sim4_pvals, name="Scenario8 Simulated Data 4")
 sc8_sim5_auc <- plot_roc_all(all_result=sc8_sim5_pvals, name="Scenario8 Simulated Data 5")
 
-sc9_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_1_1_pval.rds")
-sc9_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_1_2_pval.rds")
-sc9_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_1_3_pval.rds")
-sc9_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_1_4_pval.rds")
-sc9_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_10000_g_8_pDiff_1_5_pval.rds")
+sc9_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_1_1_pval.rds")
+sc9_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_1_2_pval.rds")
+sc9_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_1_3_pval.rds")
+sc9_sim4_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_1_4_pval.rds")
+sc9_sim5_pvals <- readRDS("./sim/results/sim_genes_10000_g_8_pDiff_1_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc9_sim1_auc <- plot_roc_all(all_result=sc9_sim1_pvals, name="Scenario9 Simulated Data 1")
@@ -1254,11 +1254,11 @@ sc9_sim4_auc <- plot_roc_all(all_result=sc9_sim4_pvals, name="Scenario9 Simulate
 sc9_sim5_auc <- plot_roc_all(all_result=sc9_sim5_pvals, name="Scenario9 Simulated Data 5")
 
 
-sc10_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_10_1_pval.rds")
-sc10_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_10_2_pval.rds")
-sc10_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_10_3_pval.rds")
-sc10_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_10_4_pval.rds")
-sc10_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_10_5_pval.rds")
+sc10_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_10_1_pval.rds")
+sc10_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_10_2_pval.rds")
+sc10_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_10_3_pval.rds")
+sc10_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_10_4_pval.rds")
+sc10_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_10_5_pval.rds")
 
 
 par(mfrow=c(1,5))
@@ -1268,11 +1268,11 @@ sc10_sim3_auc <- plot_roc_all(all_result=sc10_sim3_pvals, name="Scenario10 Simul
 sc10_sim4_auc <- plot_roc_all(all_result=sc10_sim4_pvals, name="Scenario10 Simulated Data 4")
 sc10_sim5_auc <- plot_roc_all(all_result=sc10_sim5_pvals, name="Scenario10 Simulated Data 5")
 
-sc11_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_30_1_pval.rds")
-sc11_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_30_2_pval.rds")
-sc11_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_30_3_pval.rds")
-sc11_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_30_4_pval.rds")
-sc11_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_30_5_pval.rds")
+sc11_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_30_1_pval.rds")
+sc11_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_30_2_pval.rds")
+sc11_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_30_3_pval.rds")
+sc11_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_30_4_pval.rds")
+sc11_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_30_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc11_sim1_auc <- plot_roc_all(all_result=sc11_sim1_pvals, name="Scenario11 Simulated Data 1")
@@ -1281,11 +1281,11 @@ sc11_sim3_auc <- plot_roc_all(all_result=sc11_sim3_pvals, name="Scenario11 Simul
 sc11_sim4_auc <- plot_roc_all(all_result=sc11_sim4_pvals, name="Scenario11 Simulated Data 4")
 sc11_sim5_auc <- plot_roc_all(all_result=sc11_sim5_pvals, name="Scenario11 Simulated Data 5")
 
-sc12_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_1_1_pval.rds")
-sc12_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_1_2_pval.rds")
-sc12_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_1_3_pval.rds")
-sc12_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_1_4_pval.rds")
-sc12_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_4_pDiff_1_5_pval.rds")
+sc12_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_1_1_pval.rds")
+sc12_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_1_2_pval.rds")
+sc12_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_1_3_pval.rds")
+sc12_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_1_4_pval.rds")
+sc12_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_4_pDiff_1_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc12_sim1_auc <- plot_roc_all(all_result=sc12_sim1_pvals, name="Scenario12 Simulated Data 1")
@@ -1295,11 +1295,11 @@ sc12_sim4_auc <- plot_roc_all(all_result=sc12_sim4_pvals, name="Scenario12 Simul
 sc12_sim5_auc <- plot_roc_all(all_result=sc12_sim5_pvals, name="Scenario12 Simulated Data 5")
 
 
-sc13_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_1_pval.rds")
-sc13_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_2_pval.rds")
-sc13_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_3_pval.rds")
-sc13_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_4_pval.rds")
-sc13_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_10_5_pval.rds")
+sc13_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_10_1_pval.rds")
+sc13_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_10_2_pval.rds")
+sc13_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_10_3_pval.rds")
+sc13_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_10_4_pval.rds")
+sc13_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_10_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc13_sim1_auc <- plot_roc_all(all_result=sc13_sim1_pvals, name="Scenario13 Simulated Data 1")
@@ -1308,11 +1308,11 @@ sc13_sim3_auc <- plot_roc_all(all_result=sc13_sim3_pvals, name="Scenario13 Simul
 sc13_sim4_auc <- plot_roc_all(all_result=sc13_sim4_pvals, name="Scenario13 Simulated Data 4")
 sc13_sim5_auc <- plot_roc_all(all_result=sc13_sim5_pvals, name="Scenario13 Simulated Data 5")
 
-sc14_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_30_1_pval.rds")
-sc14_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_30_2_pval.rds")
-sc14_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_30_3_pval.rds")
-sc14_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_30_4_pval.rds")
-sc14_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_30_5_pval.rds")
+sc14_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_30_1_pval.rds")
+sc14_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_30_2_pval.rds")
+sc14_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_30_3_pval.rds")
+sc14_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_30_4_pval.rds")
+sc14_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_30_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc14_sim1_auc <- plot_roc_all(all_result=sc14_sim1_pvals, name="Scenario14 Simulated Data 1")
@@ -1321,11 +1321,11 @@ sc14_sim3_auc <- plot_roc_all(all_result=sc14_sim3_pvals, name="Scenario14 Simul
 sc14_sim4_auc <- plot_roc_all(all_result=sc14_sim4_pvals, name="Scenario14 Simulated Data 4")
 sc14_sim5_auc <- plot_roc_all(all_result=sc14_sim5_pvals, name="Scenario14 Simulated Data 5")
 
-sc15_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_1_1_pval.rds")
-sc15_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_1_2_pval.rds")
-sc15_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_1_3_pval.rds")
-sc15_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_1_4_pval.rds")
-sc15_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_2_pDiff_1_5_pval.rds")
+sc15_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_1_1_pval.rds")
+sc15_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_1_2_pval.rds")
+sc15_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_1_3_pval.rds")
+sc15_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_1_4_pval.rds")
+sc15_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_2_pDiff_1_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc15_sim1_auc <- plot_roc_all(all_result=sc15_sim1_pvals, name="Scenario15 Simulated Data 1")
@@ -1334,11 +1334,11 @@ sc15_sim3_auc <- plot_roc_all(all_result=sc15_sim3_pvals, name="Scenario15 Simul
 sc15_sim4_auc <- plot_roc_all(all_result=sc15_sim4_pvals, name="Scenario15 Simulated Data 4")
 sc15_sim5_auc <- plot_roc_all(all_result=sc15_sim5_pvals, name="Scenario15 Simulated Data 5")
 
-sc16_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_10_1_pval.rds")
-sc16_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_10_2_pval.rds")
-sc16_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_10_3_pval.rds")
-sc16_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_10_4_pval.rds")
-sc16_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_10_5_pval.rds")
+sc16_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_10_1_pval.rds")
+sc16_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_10_2_pval.rds")
+sc16_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_10_3_pval.rds")
+sc16_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_10_4_pval.rds")
+sc16_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_10_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc16_sim1_auc <- plot_roc_all(all_result=sc16_sim1_pvals, name="Scenario16 Simulated Data 1")
@@ -1348,11 +1348,11 @@ sc16_sim4_auc <- plot_roc_all(all_result=sc16_sim4_pvals, name="Scenario16 Simul
 sc16_sim5_auc <- plot_roc_all(all_result=sc16_sim5_pvals, name="Scenario16 Simulated Data 5")
 
 
-sc17_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_30_1_pval.rds")
-sc17_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_30_2_pval.rds")
-sc17_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_30_3_pval.rds")
-sc17_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_30_4_pval.rds")
-sc17_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_30_5_pval.rds")
+sc17_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_30_1_pval.rds")
+sc17_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_30_2_pval.rds")
+sc17_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_30_3_pval.rds")
+sc17_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_30_4_pval.rds")
+sc17_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_30_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc17_sim1_auc <- plot_roc_all(all_result=sc17_sim1_pvals, name="Scenario17 Simulated Data 1")
@@ -1361,11 +1361,11 @@ sc17_sim3_auc <- plot_roc_all(all_result=sc17_sim3_pvals, name="Scenario17 Simul
 sc17_sim4_auc <- plot_roc_all(all_result=sc17_sim4_pvals, name="Scenario17 Simulated Data 4")
 sc17_sim5_auc <- plot_roc_all(all_result=sc17_sim5_pvals, name="Scenario17 Simulated Data 5")
 
-sc18_sim1_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_1_pval.rds")
-sc18_sim2_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_2_pval.rds")
-sc18_sim3_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_3_pval.rds")
-sc18_sim4_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_4_pval.rds")
-sc18_sim5_pvals <- readRDS("~/Desktop/kellycc/code/sim/results/sim_genes_1000_g_8_pDiff_1_5_pval.rds")
+sc18_sim1_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_1_1_pval.rds")
+sc18_sim2_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_1_2_pval.rds")
+sc18_sim3_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_1_3_pval.rds")
+sc18_sim4_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_1_4_pval.rds")
+sc18_sim5_pvals <- readRDS("./sim/results/sim_genes_1000_g_8_pDiff_1_5_pval.rds")
 
 par(mfrow=c(1,5))
 sc18_sim1_auc <- plot_roc_all(all_result=sc18_sim1_pvals, name="Scenario18 Simulated Data 1")
@@ -1376,7 +1376,7 @@ sc18_sim5_auc <- plot_roc_all(all_result=sc18_sim5_pvals, name="Scenario18 Simul
 
 #generate the AUC plot facetted by nSample pDiff, colored by nGenes
 
-setwd("~/Desktop/kellycc/code/sim")
+setwd("./sim")
 library(dplyr)
 library(plyr)
 library(reshape2)
@@ -1422,10 +1422,10 @@ for(i in 1:3){
   }
 }
 
-saveRDS(auc_result, "~/Desktop/kellycc/code/sim/results/auc_results.rds")
+saveRDS(auc_result, "./sim/results/auc_results.rds")
 
 #generate plots
-auc_result <- readRDS("~/Desktop/kellycc/code/sim/results/auc_results.rds")
+auc_result <- readRDS("./sim/results/auc_results.rds")
 head(auc_result)
 auc_table <- auc_result %>%
   mutate(pdiff_fac = paste0("pDiff = ",pdiff_val,"%"),
