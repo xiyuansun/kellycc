@@ -850,16 +850,16 @@ colnames(ebayes_pval) <- c("ebayes_pval", "de")
 saveRDS(ebayes_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_ebayes_pval",
                                  ".rds"))
 
-#plot ROC curve for sc18_sim1
+#plot ROC curve for sc1_sim1
 
-alter_pval <- sc18_alter_pval[[i]]
+alter_pval <- sc1_alter_pval[[i]]
 all_pval <- cbind(alter_pval, ebayes_pval$ebayes_pval)
 colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc18_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc18 sim5")
-saveRDS(sc18_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc1_sim1_auc <- plot_roc_all(all_result=all_pval, name="sc1 sim1")
+saveRDS(sc1_sim1_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 
 
