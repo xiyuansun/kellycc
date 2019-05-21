@@ -858,8 +858,8 @@ colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc1_sim2_auc <- plot_roc_all(all_result=all_pval, name="sc1 sim2")
-saveRDS(sc1_sim2_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc1_sim3_auc <- plot_roc_all(all_result=all_pval, name="sc1 sim3")
+saveRDS(sc1_sim3_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
