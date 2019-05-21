@@ -858,8 +858,8 @@ colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc1_sim4_auc <- plot_roc_all(all_result=all_pval, name="sc1 sim4")
-saveRDS(sc1_sim4_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc1_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc1 sim5")
+saveRDS(sc1_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
@@ -870,9 +870,9 @@ sc1_auc <- rbind(sc1_sim1_auc,
                   sc1_sim5_auc)
 rownames(sc1_auc) <- paste0("sim",1:5)
 
-saveRDS(sc18_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
+saveRDS(sc1_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
                                 ".rds"))
-
+###################################################################################################################
 
 # re-run the ROC curve
 
