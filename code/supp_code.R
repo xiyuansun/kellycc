@@ -783,26 +783,26 @@ print_params(params=trimmed_parms)
 # load the estimated parameters based on trimmed real data
 trimmed_parms <- readRDS("./real/data/trimmed_parms.rds")
 
-# Example: simulation scenario 1
-#sc1: nGenes=10000, nSample=8, pDiff=0.1, n_sim=5
+# Example: simulation scenario 2
+#sc2: nGenes=10000, nSample=8, pDiff=0.3, n_sim=5
 
-sc1_alter_pval <- NBsim_scenario(params=trimmed_parms,
+sc2_alter_pval <- NBsim_scenario(params=trimmed_parms,
                                   nGenes=10000, 
                                   nSample=8, 
-                                  pDiff=0.1, nSim=5)
+                                  pDiff=0.3, nSim=5)
 
-saveRDS(sc1_alter_pval, "./sim/results/sc1_alter_pval.rds")
+saveRDS(sc2_alter_pval, "./sim/results/sc2_alter_pval.rds")
 
 #sc1_alter_pval <- readRDS("./sim/results/sc1_alter_pval.rds")
 
 #add eBayes
 ##############################################
-#sc1
-nGenes=10000; nSample=8; pDiff=0.1
+#sc2
+nGenes=10000; nSample=8; pDiff=0.3
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim5
-i=5;
+#sim1
+i=1;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
@@ -852,14 +852,14 @@ saveRDS(ebayes_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep
 
 #plot ROC curve for sc1_sim1
 
-alter_pval <- sc1_alter_pval[[i]]
+alter_pval <- sc2_alter_pval[[i]]
 all_pval <- cbind(alter_pval, ebayes_pval$ebayes_pval)
 colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc1_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc1 sim5")
-saveRDS(sc1_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc2_sim1_auc <- plot_roc_all(all_result=all_pval, name="sc2 sim1")
+saveRDS(sc2_sim1_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
