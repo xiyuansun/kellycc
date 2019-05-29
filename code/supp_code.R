@@ -801,8 +801,8 @@ saveRDS(sc5_alter_pval, "./sim/results/sc4_alter_pval.rds")
 nGenes=10000; nSample=4; pDiff=0.3
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim1
-i=1;
+#sim2
+i=2;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
