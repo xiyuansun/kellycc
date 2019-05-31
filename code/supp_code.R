@@ -801,8 +801,8 @@ saveRDS(sc6_alter_pval, "./sim/results/sc6_alter_pval.rds")
 nGenes=10000; nSample=4; pDiff=0.01
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim5
-i=5;
+#sim1
+i=1;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
@@ -852,14 +852,14 @@ saveRDS(ebayes_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep
 
 #plot ROC curve for sc1_sim1
 
-alter_pval <- sc5_alter_pval[[i]]
+alter_pval <- sc6_alter_pval[[i]]
 all_pval <- cbind(alter_pval, ebayes_pval$ebayes_pval)
 colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc5_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc5 sim5")
-saveRDS(sc5_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc6_sim1_auc <- plot_roc_all(all_result=all_pval, name="sc6 sim1")
+saveRDS(sc6_sim1_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
