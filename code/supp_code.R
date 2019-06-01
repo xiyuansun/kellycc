@@ -786,23 +786,23 @@ trimmed_parms <- readRDS("./real/data/trimmed_parms.rds")
 # Example: simulation scenario 2
 #sc2: nGenes=10000, nSample=8, pDiff=0.3, n_sim=5
 
-sc6_alter_pval <- NBsim_scenario(params=trimmed_parms,
+sc7_alter_pval <- NBsim_scenario(params=trimmed_parms,
                                   nGenes=10000, 
-                                  nSample=4, 
-                                  pDiff=0.01, nSim=5)
+                                  nSample=16, 
+                                  pDiff=0.1, nSim=5)
 
-saveRDS(sc6_alter_pval, "./sim/results/sc6_alter_pval.rds")
+saveRDS(sc7_alter_pval, "./sim/results/sc7_alter_pval.rds")
 
 #sc1_alter_pval <- readRDS("./sim/results/sc1_alter_pval.rds")
 
 #add eBayes
 ##############################################
-#sc6
-nGenes=10000; nSample=4; pDiff=0.01
+#sc7
+nGenes=10000; nSample=16; pDiff=0.1
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim5
-i=5;
+#sim1
+i=1;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
@@ -852,14 +852,14 @@ saveRDS(ebayes_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep
 
 #plot ROC curve for sc1_sim1
 
-alter_pval <- sc6_alter_pval[[i]]
+alter_pval <- sc7_alter_pval[[i]]
 all_pval <- cbind(alter_pval, ebayes_pval$ebayes_pval)
 colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc6_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc6 sim5")
-saveRDS(sc6_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc7_sim1_auc <- plot_roc_all(all_result=all_pval, name="sc7 sim1")
+saveRDS(sc7_sim1_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
