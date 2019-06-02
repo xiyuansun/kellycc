@@ -786,23 +786,23 @@ trimmed_parms <- readRDS("./real/data/trimmed_parms.rds")
 # Example: simulation scenario 2
 #sc2: nGenes=10000, nSample=8, pDiff=0.3, n_sim=5
 
-sc7_alter_pval <- NBsim_scenario(params=trimmed_parms,
+sc8_alter_pval <- NBsim_scenario(params=trimmed_parms,
                                   nGenes=10000, 
                                   nSample=16, 
-                                  pDiff=0.1, nSim=5)
+                                  pDiff=0.3, nSim=5)
 
-saveRDS(sc7_alter_pval, "./sim/results/sc7_alter_pval.rds")
+saveRDS(sc8_alter_pval, "./sim/results/sc8_alter_pval.rds")
 
 #sc1_alter_pval <- readRDS("./sim/results/sc1_alter_pval.rds")
 
 #add eBayes
 ##############################################
-#sc7
-nGenes=10000; nSample=16; pDiff=0.1
+#sc8
+nGenes=10000; nSample=16; pDiff=0.3
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim5
-i=5;
+#sim1
+i=1;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
