@@ -801,8 +801,8 @@ saveRDS(sc8_alter_pval, "./sim/results/sc8_alter_pval.rds")
 nGenes=10000; nSample=16; pDiff=0.3
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim4
-i=4;
+#sim5
+i=5;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
@@ -858,8 +858,8 @@ colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc8_sim4_auc <- plot_roc_all(all_result=all_pval, name="sc8 sim4")
-saveRDS(sc8_sim4_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc8_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc8 sim5")
+saveRDS(sc8_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
@@ -869,14 +869,14 @@ saveRDS(sc8_sim4_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRe
 
 
 
-sc7_auc <- rbind(sc7_sim1_auc, 
-                  sc7_sim2_auc,
-                  sc7_sim3_auc,
-                  sc7_sim4_auc,
-                  sc7_sim5_auc)
-rownames(sc7_auc) <- paste0("sim",1:5)
+sc8_auc <- rbind(sc8_sim1_auc, 
+                  sc8_sim2_auc,
+                  sc8_sim3_auc,
+                  sc8_sim4_auc,
+                  sc8_sim5_auc)
+rownames(sc8_auc) <- paste0("sim",1:5)
 
-saveRDS(sc7_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
+saveRDS(sc8_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
                                 ".rds"))
 ###################################################################################################################
 
