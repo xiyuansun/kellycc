@@ -786,19 +786,19 @@ trimmed_parms <- readRDS("./real/data/trimmed_parms.rds")
 # Example: simulation scenario 2
 #sc2: nGenes=10000, nSample=8, pDiff=0.3, n_sim=5
 
-sc8_alter_pval <- NBsim_scenario(params=trimmed_parms,
+sc9_alter_pval <- NBsim_scenario(params=trimmed_parms,
                                   nGenes=10000, 
                                   nSample=16, 
-                                  pDiff=0.3, nSim=5)
+                                  pDiff=0.01, nSim=5)
 
-saveRDS(sc8_alter_pval, "./sim/results/sc8_alter_pval.rds")
+saveRDS(sc9_alter_pval, "./sim/results/sc9_alter_pval.rds")
 
 #sc1_alter_pval <- readRDS("./sim/results/sc1_alter_pval.rds")
 
 #add eBayes
 ##############################################
-#sc8
-nGenes=10000; nSample=16; pDiff=0.3
+#sc9
+nGenes=10000; nSample=16; pDiff=0.01
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
 #sim5
@@ -852,14 +852,14 @@ saveRDS(ebayes_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep
 
 #plot ROC curve for sc1_sim1
 
-alter_pval <- sc8_alter_pval[[i]]
+alter_pval <- sc9_alter_pval[[i]]
 all_pval <- cbind(alter_pval, ebayes_pval$ebayes_pval)
 colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc8_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc8 sim5")
-saveRDS(sc8_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc9_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc9 sim5")
+saveRDS(sc9_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
