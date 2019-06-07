@@ -801,8 +801,8 @@ saveRDS(sc11_alter_pval, "./sim/results/sc11_alter_pval.rds")
 nGenes=1000; nSample=8; pDiff=0.3
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
-#sim2
-i=2;
+#sim5
+i=5;
 data_file <- paste(paste("./sim/data/sim_genes",nGenes,"g",nRep, "pDiff",diffPerc, i, sep="_"),"rds",sep=".")
 
 d = as.data.frame(readRDS(data_file))
@@ -858,25 +858,25 @@ colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc11_sim2_auc <- plot_roc_all(all_result=all_pval, name="sc11 sim2")
-saveRDS(sc11_sim2_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc11_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc11 sim5")
+saveRDS(sc11_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
-#sc6
-# nGenes=10000; nSample=4; pDiff=0.01
-# diffPerc = pDiff*100; nRep=nSample/2
+#sc11
+nGenes=1000; nSample=8; pDiff=0.3
+diffPerc = pDiff*100; nRep=nSample/2
 
 
 
-sc9_auc <- rbind(sc9_sim1_auc, 
-                  sc9_sim2_auc,
-                  sc9_sim3_auc,
-                  sc9_sim4_auc,
-                  sc9_sim5_auc)
-rownames(sc9_auc) <- paste0("sim",1:5)
+sc11_auc <- rbind(sc11_sim1_auc, 
+                  sc11_sim2_auc,
+                  sc11_sim3_auc,
+                  sc11_sim4_auc,
+                  sc11_sim5_auc)
+rownames(sc11_auc) <- paste0("sim",1:5)
 
-saveRDS(sc9_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
+saveRDS(sc11_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
                                 ".rds"))
 ###################################################################################################################
 
