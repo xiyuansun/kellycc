@@ -786,12 +786,12 @@ trimmed_parms <- readRDS("./real/data/trimmed_parms.rds")
 # Example: simulation scenario 2
 #sc2: nGenes=10000, nSample=8, pDiff=0.3, n_sim=5
 
-sc15_alter_pval <- NBsim_scenario(params=trimmed_parms,
+sc16_alter_pval <- NBsim_scenario(params=trimmed_parms,
                                   nGenes=1000, 
-                                  nSample=4, 
-                                  pDiff=0.01, nSim=5)
+                                  nSample=16, 
+                                  pDiff=0.1, nSim=5)
 
-saveRDS(sc15_alter_pval, "./sim/results/sc15_alter_pval.rds")
+saveRDS(sc16_alter_pval, "./sim/results/sc16_alter_pval.rds")
 
 #add eBayes
 ####################################################################################################################
@@ -850,14 +850,14 @@ saveRDS(ebayes_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep
 
 #plot ROC curve for sc1_sim1
 
-alter_pval <- sc15_alter_pval[[i]]
+alter_pval <- sc16_alter_pval[[i]]
 all_pval <- cbind(alter_pval, ebayes_pval$ebayes_pval)
 colnames(all_pval)[ncol(all_pval)] <- c("ebayes_pval")
 
 saveRDS(all_pval, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_pval",
                               ".rds"))
-sc15_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc15 sim5")
-saveRDS(sc15_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
+sc16_sim5_auc <- plot_roc_all(all_result=all_pval, name="sc16 sim5")
+saveRDS(sc16_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc, "_",i,"_auc",
                                    ".rds"))
 ##########################################################################################################################
 
@@ -867,14 +867,14 @@ saveRDS(sc15_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nR
 
 
 
-sc15_auc <- rbind(sc15_sim1_auc, 
-                  sc15_sim2_auc,
-                  sc15_sim3_auc,
-                  sc15_sim4_auc,
-                  sc15_sim5_auc)
-rownames(sc15_auc) <- paste0("sim",1:5)
+sc16_auc <- rbind(sc16_sim1_auc, 
+                  sc16_sim2_auc,
+                  sc16_sim3_auc,
+                  sc16_sim4_auc,
+                  sc16_sim5_auc)
+rownames(sc16_auc) <- paste0("sim",1:5)
 
-saveRDS(sc15_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
+saveRDS(sc16_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
                                 ".rds"))
 ###################################################################################################################
 
