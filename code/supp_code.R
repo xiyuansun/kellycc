@@ -795,8 +795,8 @@ saveRDS(sc15_alter_pval, "./sim/results/sc15_alter_pval.rds")
 
 #add eBayes
 ####################################################################################################################
-#sc15
-nGenes=1000; nSample=4; pDiff=0.01
+#sc16
+nGenes=1000; nSample=16; pDiff=0.1
 diffPerc = pDiff*100; nRep=nSample/2
 ####################################################################################################################
 #sim1
@@ -867,14 +867,14 @@ saveRDS(sc15_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nR
 
 
 
-sc14_auc <- rbind(sc14_sim1_auc, 
-                  sc14_sim2_auc,
-                  sc14_sim3_auc,
-                  sc14_sim4_auc,
-                  sc14_sim5_auc)
-rownames(sc14_auc) <- paste0("sim",1:5)
+sc15_auc <- rbind(sc15_sim1_auc, 
+                  sc15_sim2_auc,
+                  sc15_sim3_auc,
+                  sc15_sim4_auc,
+                  sc15_sim5_auc)
+rownames(sc15_auc) <- paste0("sim",1:5)
 
-saveRDS(sc14_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
+saveRDS(sc15_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
                                 ".rds"))
 ###################################################################################################################
 
