@@ -867,14 +867,14 @@ saveRDS(sc18_sim5_auc, file=paste0("./sim/results/","sim_genes_",nGenes,"_g_",nR
 
 
 
-sc17_auc <- rbind(sc17_sim1_auc, 
-                  sc17_sim2_auc,
-                  sc17_sim3_auc,
-                  sc17_sim4_auc,
-                  sc17_sim5_auc)
-rownames(sc17_auc) <- paste0("sim",1:5)
+sc18_auc <- rbind(sc18_sim1_auc, 
+                  sc18_sim2_auc,
+                  sc18_sim3_auc,
+                  sc18_sim4_auc,
+                  sc18_sim5_auc)
+rownames(sc18_auc) <- paste0("sim",1:5)
 
-saveRDS(sc17_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
+saveRDS(sc18_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep, "_pDiff_",diffPerc,"_auc",
                                 ".rds"))
 ###################################################################################################################
 
