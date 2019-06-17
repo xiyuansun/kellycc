@@ -878,7 +878,7 @@ saveRDS(sc18_auc, file = paste0("./sim/results/","sim_genes_",nGenes,"_g_",nRep,
                                 ".rds"))
 ###################################################################################################################
 
-# re-run the ROC curve
+# more helper functions
 
 plot_roc_all <- function(all_result, name){
   sim_result_tb <- all_result
@@ -942,121 +942,6 @@ plot_roc_all <- function(all_result, name){
 }
 
 
-#test the de_eval function (DESeq and sSeq)
-
-
-
-
-calculate_alt_pvals<- function(simdata){
-  #need to run de_eval function first
-  
-  sim_count = as.matrix(simdata[,-ncol(simdata)])
-  sim_true_de <- as.matrix(simdata[,ncol(simdata)],ncol=1)
-  colnames(sim_true_de) <- "true_de"
-  sim_split_names <- unlist(strsplit(colnames(sim_count), "[_]"))
-  sim_cond =sim_split_names[seq_along(sim_split_names)%%2 !=0]
-  
-  sim_er <- de_eval(rawdata=sim_count, condition=sim_cond, program="edgeR")
-  sim_er_df <- as.data.frame(sim_er[[1]])
-  colnames(sim_er_df) <- paste("er", colnames(sim_er_df),sep="_")
-  
-  sim_ds2 <- de_eval(rawdata=sim_count, condition=sim_cond, program="DESeq2")
-  sim_ds2_df <- as.data.frame(sim_ds2[[1]])
-  colnames(sim_ds2_df) <- paste("ds2", "pval",sep="_")
-  
-  sim_ds <- de_eval(rawdata=sim_count, condition=sim_cond, program="DESeq")
-  sim_ds_df <- as.data.frame(sim_ds[[1]])
-  colnames(sim_ds_df) <- paste("ds", colnames(sim_ds_df),sep="_")
-  
-  
-  sim_ss <- de_eval(rawdata=sim_count, condition=sim_cond, program="sSeq")
-  sim_ss_df <- as.data.frame(sim_ss[[1]])
-  colnames(sim_ss_df) <- paste("ss", colnames(sim_ss_df),sep="_")
-  
-  sim_eb <- de_eval(rawdata=sim_count, condition=sim_cond, program="EBSeq")
-  sim_eb_df <- as.data.frame(sim_eb[[1]])
-  colnames(sim_eb_df) <- paste("eb", colnames(sim_eb_df),sep="_")
-  
-  
-  sim_results <- as.data.frame(cbind(sim_er_df, sim_ds2_df, 
-                                     sim_ds_df, sim_ss_df,
-                                     sim_eb_df))
-  sim_result <- sim_results[, grep('_pval', names(sim_results))]
-  sim_result_tb <- cbind(sim_result, sim_true_de)
-  sim_result_tb[is.na(sim_result_tb)] <- 1
-  
-  return(sim_result_tb)
-}
-
-plot_roc_all2 <- function(all_result, name){
-  sim_result_tb <- all_result
-  
-  sim_ds2_pred <- prediction(sim_result_tb$ds2_pval,sim_result_tb$true_de, label.ordering = c(1,0))
-  sim_ds2_perf <- performance(sim_ds2_pred, "tpr","fpr")
-  sim_ds2_auc <- performance(sim_ds2_pred, "auc")@y.values[[1]]
-  
-  sim_ds_pred <- prediction(sim_result_tb$ds_pval,sim_result_tb$true_de, label.ordering = c(1,0))
-  sim_ds_perf <- performance(sim_ds_pred, "tpr","fpr")
-  sim_ds_auc <- performance(sim_ds_pred, "auc")@y.values[[1]]
-  
-  sim_er_pred <- prediction(sim_result_tb$er_pval,sim_result_tb$true_de, label.ordering = c(1,0))
-  sim_er_perf <- performance(sim_er_pred, "tpr","fpr")
-  sim_er_auc <- performance(sim_er_pred, "auc")@y.values[[1]]
-  
-  sim_ss_pred <- prediction(sim_result_tb$ss_pval,sim_result_tb$true_de, label.ordering = c(1,0))
-  sim_ss_perf <- performance(sim_ss_pred, "tpr","fpr")
-  sim_ss_auc <- performance(sim_ss_pred, "auc")@y.values[[1]]
-  
-  
-  sim_eb_pred <- prediction(sim_result_tb$eb_pval,sim_result_tb$true_de, label.ordering = c(1,0))
-  sim_eb_perf <- performance(sim_eb_pred, "tpr","fpr")
-  sim_eb_auc <- performance(sim_eb_pred, "auc")@y.values[[1]]
-  
-  
-  sim_ebayes_pred <- prediction(sim_result_tb$ebayes_pval,sim_result_tb$true_de, label.ordering = c(1,0))
-  sim_ebayes_perf <- performance(sim_ebayes_pred, "tpr","fpr")
-  sim_ebayes_auc <- performance(sim_ebayes_pred, "auc")@y.values[[1]]
-  
-  library(ROCR)
-  
-  plot(sim_ds2_perf, col="blue", main=paste(name,"ROC curves",sep=" "))
-  plot(sim_ds_perf, col="orange", add=TRUE)
-  plot(sim_er_perf, col="red", add=TRUE)
-  plot(sim_ss_perf, col="green",add=TRUE)
-  plot(sim_eb_perf, col="brown",add=TRUE)
-  plot(sim_ebayes_perf, col="black", add=TRUE)
-  
-  text <- c(paste("DESeq2 AUC",round(sim_ds2_auc, digits = 2), sep = "="), 
-            paste("DESeq AUC",round(sim_ds_auc, digits = 2), sep = "="),
-            paste("edgeR AUC",round(sim_er_auc, digits = 2), sep = "="),
-            paste("sSeq AUC",round(sim_ss_auc, digits = 2), sep = "="),
-            paste("EBSeq AUC",round(sim_eb_auc, digits = 2), sep = "="),
-            paste("eBayes AUC", round(sim_ebayes_auc, digits = 2), sep="="))
-  col = c("blue","orange","red","green","brown","black")
-  lty <- c(1,1,1,1,1,1)
-  legend("bottomright",text,text.col=col ,lwd = 1,lty=lty,col= col)
-  
-  auc_result <- matrix(nrow=1, ncol=6)
-  auc_result[1,1]<- sim_ds2_auc
-  auc_result[1,2] <- sim_ds_auc
-  auc_result[1,3] <- sim_er_auc
-  auc_result[1,4] <- sim_ss_auc
-  auc_result[1,5] <- sim_eb_auc
-  auc_result[1,6] <- sim_ebayes_auc
-  colnames(auc_result) <- c("ds2_auc", "ds_auc", "er_auc",
-                            "ss_auc", "eb_auc", "ebayes_auc")
-  
-  return(auc_result)
-}
-
-sc1_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
-sc1_sim1_all_padj <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
-sc1_sim1_ebayes_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
-sc1_sim1_all_pval <- cbind(sc1_sim1_all_padj, sc1_sim1_ebayes_pvals$ebayes_pval)
-colnames(sc1_sim1_all_pval) <- c(colnames(sc1_sim1_all_pval)[1:6], "ebayes_pval") 
-
-#sc1_sim1_auc_result <- plot_roc_all2(all_result=sc1_sim1_all_pval, name="scenario1 sim1 data")
-
 # compute the power of each method
 calculate_fp<-function(simdata, padj_result){
   er_de = as.numeric(padj_result[,"er_padj"] < 0.05)
@@ -1097,6 +982,8 @@ calculate_tp <- function(simdata, padj_result){
   
 }
 
+#################################################################################################
+# calculate the fp and tp
 sc1_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_10_1.rds")
 sc1_sim1_all_padj <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
 sc1_sim1_ebayes_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_ebayes_pval.rds")
@@ -1115,25 +1002,12 @@ sc1_sim1_fpr_res <- sc1_sim1_fp %>%
          ebayes_fpr = ebayes_fp/nGenes)%>%
   select(er_fpr, ds_fpr, ds2_fpr, ss_fpr, eb_fpr, ebayes_fpr)
 
+# consider calculating more fpr's and tp's for other scenarios
 
-sc1_sim2_tp <- calculate_tp(simdata = sc1_sim1_data, padj_result = sc1_sim1_all_pval)
+###############################################################################################s
 
-
-sc1_sim2_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_10_2.rds")
-sc1_sim2_alt_pvals <- calculate_alt_pvals(sc1_sim2_data)
-sc1_sim2_ebayes_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_2_ebayes_pval.rds")
-sc1_sim2_all_pval <- cbind(sc1_sim2_alt_pvals, sc1_sim2_ebayes_pvals$ebayes_pval)
-colnames(sc1_sim2_all_pval) <- c(colnames(sc1_sim2_all_pval)[1:6], "ebayes_pval") 
-sc1_sim2_auc_result <- plot_roc_all2(all_result=sc1_sim2_all_pval, name="scenario1 sim2 data")
-
-
-#check the normalized library size
-sc2_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_30_1.rds")
-sc3_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_4_pDiff_1_1.rds")
-sc4_sim1_data <- readRDS("./sim/data/sim_genes_10000_g_2_pDiff_10_1.rds")
-
-
-
+# plot 5 ROC curves in each scenario
+# in the same figure
 sc1_sim1_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_1_pval.rds")
 sc1_sim2_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_2_pval.rds")
 sc1_sim3_pvals <- readRDS("./sim/results/sim_genes_10000_g_4_pDiff_10_3_pval.rds")
@@ -1378,6 +1252,8 @@ sc18_sim3_auc <- plot_roc_all(all_result=sc18_sim3_pvals, name="Scenario18 Simul
 sc18_sim4_auc <- plot_roc_all(all_result=sc18_sim4_pvals, name="Scenario18 Simulated Data 4")
 sc18_sim5_auc <- plot_roc_all(all_result=sc18_sim5_pvals, name="Scenario18 Simulated Data 5")
 
+
+###################################################################################################
 #generate the AUC plot facetted by nSample pDiff, colored by nGenes
 
 setwd("./sim")
