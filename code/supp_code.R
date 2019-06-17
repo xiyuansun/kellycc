@@ -1302,10 +1302,10 @@ for(i in 1:3){
   }
 }
 
-saveRDS(auc_result, "./sim/results/auc_results.rds")
-
+saveRDS(auc_result, "./results/auc_results.rds")
+#############################################################################
 #generate plots
-auc_result <- readRDS("./sim/results/auc_results.rds")
+#auc_result <- readRDS("./results/auc_results.rds")
 head(auc_result)
 auc_table <- auc_result %>%
   mutate(pdiff_fac = paste0("pDiff = ",pdiff_val,"%"),
