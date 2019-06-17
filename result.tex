@@ -4,17 +4,17 @@
 
 For the methods in Chapter 2, we sorted genes according to the computed measure of the strength of evidence for DE, which were the adjusted p-values for alternative methods and the statistics shown in Equation \eqref{eq:10} for the \texttt{eBayes} method. From these sorted lists, we calculated area under ROC curve (AUC) values to evaluate the ability of these methods to distinguish genes with DE. 
 
-To evaluate the true positive rate (TPR) and false positive rate (FPR) together, we generated receiver operator characteristic (ROC) curves based on the DE analysis results of the simulated datasets in each simulation scenario. It is a plot of the true positive rate against the false positive rate for the different possible cutpoints of a test (DE test). The slope of the tagent line at a cutpoint gives the likelihood ratio for that value of the test. Figure \ref{sc1_roc} is an example of the ROC curves we generated based on scenario 1 all simulated datasets. More scenario simulation ROC curves are in the Appendix. 
+To evaluate the true positive rate (TPR) and false positive rate (FPR) together, we generated receiver operator characteristic (ROC) curves based on the DE analysis results of the simulated datasets in each simulation scenario. It is a plot of the true positive rate against the false positive rate for the different possible cutpoints of a test (DE test). The slope of the tagent line at a cutpoint gives the likelihood ratio for that value of the test. Figure \ref{sc1_roc_curves} is an example of the ROC curves we generated based on scenario 1 all simulated datasets. More scenario simulation ROC curves are in the Appendix. 
 
 \begin{figure}[h!tb] 
-\includegraphics[height=6cm,width=15cm]{sc1_roc}
+\includegraphics[height=6cm,width=15cm]{sc1_roc_curves}
 \caption{ROC curves of Simulated Datasets with $nGenes=10000, nSamples=8, pDiff=10\%$}
-\label{sc1_roc}
+\label{sc1_roc_curves}
 \end{figure}
 
 
 \begin{figure}[h!tb] 
-\includegraphics[height=10cm,width=15cm]{auc_plot}
+\includegraphics[height=10cm,width=15cm]{facetted_auc_plot}
 \caption{AUC Plot of Simulated Datasets across Six Methods, Facetted by proportion of DE (pDiff) and number of samples (nSample), Grouped by total number of Genes (nGenes)}
 \label{auc}
 \end{figure}
