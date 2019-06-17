@@ -1317,7 +1317,7 @@ auc_table$ord_sample_fac <- factor(auc_table$sample_fac)
 auc_table$ord_sample_fac<- ordered(auc_table$ord_sample_fac, 
                                    levels = c("nSample = 4", "nSample = 8", "nSample = 16"))
 
-glimpse(auc_table)
+#glimpse(auc_table)
 
 # ds -> DESeq; ds2->DESeq2; er->edgeR; ss -> sSeq; eb -> EBSeq; ebayes->eBayes
 auc_table$method[which(auc_table$method=="ds2")] <- "DESeq2"
