@@ -20,7 +20,7 @@ To evaluate the true positive rate (TPR) and false positive rate (FPR) together,
 \end{figure}
 
 
-We also evaluated the different methods with another performance metric: area under the curve (AUC) of ROC curves. The accuracy of the DE test depends on how well the test seperates the DE and non-DE groups. Accuracy is measured by the area under the ROC curve. Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in \ref{tab:Scenario}. We facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. 
+We also evaluated the different methods with another performance metric: area under the curve (AUC) of ROC curves. The accuracy of the DE test depends on how well the test seperates the DE and non-DE groups. Accuracy is measured by the area under the ROC curve. Figure \ref{auc} provides the area under the ROC curve (AUC) across the 5 simulations for each of the scenario defined in Table \ref{tab:Scenario}. We facetted the plots by number of samples (nSample) and differential gene expression proportion (pDiff), grouped by different level of total number of genes. 
 
 Similar to the single ROC curve, the \texttt{eBayes} method appears to outperform the other methods in terms of AUC, when number of samples and true DE proportion are small. With four or eight replicates per variety, there does not appear to be much of a difference between \texttt{eBayes} and {\tt DESeq2}, but as the number of replicates decreases, the \texttt{eBayes} approach appears to improve relative to {\tt DESeq2} in terms of AUC values.
 

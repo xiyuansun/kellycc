@@ -34,20 +34,19 @@ Number of Samples & 8\\
 
 \end{table}
 
-We estimated parameters from the maize RNA-seq data \citep{paschold2012complementation}, and fit it by GLM with negative binomial distribution. The genewise dispersions for negative binomial GLMs were estimated using Cox-Reid Adjusted Profile Likelihood\citep{mccarthy2012differential}. This method modifies the maximum likelihood estimate of dispersion by accounting for the experimental design through Fisher's information matrix in the log-likelihood function\citep{mccarthy2012differential}. 
+We estimated genewise dispersions parameters $\hat{\phi}_g$ and library sizes $\hat{N}_{ij}$ based on the maize RNA-seq data \citep{paschold2012complementation} through {\tt edgeR}, fit it by GLM with negative binomial distribution and log link function to get the estimated regression coefficients $\hat{\beta}_{gi}$. 
 
 In summary, the library size (reads mapped to the transcriptome) is $\log{10}$ mean of $6.99$, the normalized median gene expressions $\log{2}$ counts per million (CPM) is $3.92$, and the median LFCs of DE genes is $0.39$. 
 
 
 \subsection{Model}
 
-In our simulated data, we used a generalized linear model (GLM) with negative binomial distribution. For the dataset of two groups, the counts for a particular gene $g$ in group $i$ replicate $j$ were modeled by Equation \eqref{eq:1}, where $\phi_g$ is the genewise dispersion calculated by the CR-APL method, and the expected value $\mu_{gi}$ is a function of the library size of group $i$ replicate $j$ as Equation \ref{eq:2}, where $\mu_{gi}$ is the expected counts of gene $g$ in group $i$, $N_{ij}$ is the normalized library size for group $i$ replicate $j$, $\beta_g$ is the vector of coefficients for the two experimental conditions (two groups), $x_{i}$ is a vector of length $2$ indicating whether replicate $j$ belongs to group one or group two in the experiment\citep{ching2014power}. 
-
+In our simulated data, we used a generalized linear model (GLM) with negative binomial distribution shown in Section 2.2. For the dataset of two gene varieties, the read counts for a particular gene $g$ in variety $i$ replicate $j$ were modeled by Equation \eqref{eq:1}, where $\phi_g$ is assigned to be the estimated genewise dispersion $\hat{\phi}_g$, and the mean parameter $\mu_{gij}$ is assigned to be $\tilde{N}_{ij}\times \exp(x_i \hat{\beta}_{gi}) = \tilde{N}_{ij}\times \exp(\hat{\lambda}_{gi})$, where $\tilde{N}_{ij} \sim Unif(\min(\hat{N}_{ij}), \max(\hat{N}_{ij})); i=1,2; j = 1,2,..., nSample/2$
 
 
 \subsection{Simulation Scenario}
 
-To evaluate the performance of \texttt{eBayes} method and the alternative methods across a variety of reasonable scenarios, we created several options to make up each scenario. We set up the simulation scenarios as the following Table \ref{tab:Scenario}:
+To compare the \texttt{eBayes} method with the alternative methods across a variety of reasonable scenarios, we created several options to make up each scenario. We set up the simulation scenarios as the following Table \ref{tab:Scenario}:
 
 \begin{table}[H]
 \centering
@@ -97,14 +96,9 @@ sc & nGenes & nSamples & pDiff(\%) \\
 \end{table}
 
 
-We set up a simulation framework with parameters based on the joint distribution of mean $\mu_{gi}$ and gene-wise dispersion estimates $\phi_g$ from the maize RNA-seq data \citep{paschold2012complementation}.
+For a simulated count data, the number of true DE genes was determined by the proportion of differential gene expression (pDiff)  and the total genes (nGenes) in the simulation scenario setup. Among the randomly selected nGenes genes, we randomly chose $nGenes \times (1-pDiff)$ genes, assigned the relative abundance of these chosen genes in two variwties the same as $\lambda_{g1} = \lambda_{g2} = 1/2\times(\hat{\beta}_{g1} + \hat{\beta}_{g2})$, where $\hat{\beta}_{gi}, i=1,2$ were the estimated regression coefficients.
 
-We generated true NB model parameters, $\mu_{gi}$ and $\phi_g$, using the joint distribution of estimates $\hat{\mu}_{gi}$ and $\hat{\phi}_g$, estimated using {\tt edgeR} from the real dataset \citep{paschold2012complementation}. The derived from real data parameters were used to simulate the counts, from a NB distribution. 
-
-
-For a particular gene in the simulated dataset, the number of true DE tag was determined via the proportion of differential gene expression (pDiff) in the simulation scenario setup. I randomly selected $nGenes \times (1-pDiff)$ genes and assign the expected variety count means the same as $\mu_{g1} = \mu_{g2} = 1/(nSamples)\sum_{j=1}^{nRep} \left[ N_{1j}\exp(X_1^T \beta_{g1})+ N_{2j}\exp(X_2^T \beta_{g2}) \right]$ for the selected non-DE genes, where $\beta_{gi}, i=1,2$ was the regression coefficient estimates shown in equation \eqref{eq:3} got from the parameter estmation based on the real RNA-seq dataset.
-
-We simulated nGenes $\in (10000, 1000)$ total number of genes with negative binomial distribution counts. To simulate data with realistic moments, the mean and dispersions were drawn from the joint distribution of means and gene-wise dispersion estimates from the real maize data \citep{paschold2012complementation}. These simulated datasets were of varying total sample size nSamples $\in {(4,8,16)}$, and the samples were split into two equal-sized groups. pDiff $\in {(10\%, 30\%, 1\%)}$ of genes are true DE genes. For each scenario, we simulated $5$ datasets with different seeds.
+We simulated nGenes $\in (10000, 1000)$ total number of genes following negative binomial distribution. The mean and dispersions were drawn from the joint distribution of means and gene-wise dispersion estimates from the real maize data \citep{paschold2012complementation} shown in Section 3.1.2. These simulated datasets were of varying total sample size nSamples $\in {(4,8,16)}$, and the samples were split into two equal-sized groups. pDiff $\in {(10\%, 30\%, 1\%)}$ of genes are true DE genes. For each scenario, we simulated $nRep = 5$ datasets with different seeds.
 
 
 
