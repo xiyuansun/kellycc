@@ -96,7 +96,7 @@ sc & nGenes & nSamples & pDiff(\%) \\
 \end{table}
 
 
-For a simulated count data, the number of true DE genes was determined by the proportion of differential gene expression (pDiff)  and the total genes (nGenes) in the simulation scenario setup. Among the randomly selected nGenes genes, we randomly chose $nGenes \times (1-pDiff)$ genes, assigned the relative abundance of these chosen genes in two variwties the same as $\lambda_{g1} = \lambda_{g2} = 1/2\times(\hat{\beta}_{g1} + \hat{\beta}_{g2})$, where $\hat{\beta}_{gi}, i=1,2$ were the estimated regression coefficients.
+For a simulated count data, the number of true DE genes was determined by the proportion of differential gene expression (pDiff) and the total genes (nGenes) in the simulation scenario setup. Among the randomly selected nGenes genes, we randomly chose $nGenes \times (1-pDiff)$ genes, assigned the relative abundance of these chosen genes in two varieties the same as $\lambda_{g1} = \lambda_{g2} = 1/2\times(\hat{\beta}_{g1} + \hat{\beta}_{g2})$, where $\hat{\beta}_{gi}, i=1,2$ were the estimated regression coefficients.
 
 We simulated nGenes $\in (10000, 1000)$ total number of genes following negative binomial distribution. The mean and dispersions were drawn from the joint distribution of means and gene-wise dispersion estimates from the real maize data \citep{paschold2012complementation} shown in Section 3.1.2. These simulated datasets were of varying total sample size nSamples $\in {(4,8,16)}$, and the samples were split into two equal-sized groups. pDiff $\in {(10\%, 30\%, 1\%)}$ of genes are true DE genes. For each scenario, we simulated $nRep = 5$ datasets with different seeds.
 
